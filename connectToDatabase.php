@@ -1,9 +1,6 @@
 <? PHP
-	function connectToDatabase()
+	function connectToDatabase($host, $user, $password)
 	{
-		$host = 'CMSdatabase.db';
-		$user = 'admin';
-		$password = 'password';
 		$dbConn = mysql_connect($host, $user, $password);
 		
 		if(! $dbConn)

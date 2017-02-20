@@ -1,6 +1,8 @@
 # magpie-cms
 Team Members: Nick Duke, Brad Howard, Vlad Sinitsa, Sage Zaugg
+
 Support Members: Meg Lybbert
+
 Client: Ginelle Hustrulid
 
 # Description

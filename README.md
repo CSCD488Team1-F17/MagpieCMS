@@ -13,7 +13,7 @@ To run this project on your local machine you must first install the Slim framew
 
 1. cd into the app directory
 
-2. with composer installed run composer require slim/slim "^3.0"
+2. with composer installed run: composer require slim/slim "^3.0"
 
 If you dont have composer installed you can go here https://getcomposer.org/download/ to download and install it for windows for linux you can run: 
 

@@ -10,9 +10,7 @@ CREATE TABLE Walks
 	WalkLength DOUBLE,
 	IsOrder TINYINT(1),
 	WalkPreviewID INTEGER,
-	PicID INTEGER,
-	FOREIGN KEY (WalkPreviewID) REFERENCES WalkDescription(DesID) ON DELETE CASCADE,
-	FOREIGN KEY (PicID) REFERENCES WalkImages(PicID) ON DELETE CASCADE
+	PicID INTEGER
 );
 
 CREATE TABLE LandMarks
@@ -24,10 +22,7 @@ CREATE TABLE LandMarks
 	NumberOfWalks INTEGER,
 	Description INTEGER,
 	QRCodeID INTEGER,
-	PicID INTEGER,
-	FOREIGN KEY (Description) REFERENCES LandMarkDescription(DesID)	ON DELETE CASCADE,
-	FOREIGN KEY (QRCodeID) REFERENCES QRCodes(PicID) ON DELETE CASCADE,
-	FOREIGN KEY (PicID) REFERENCES LandMarkImages(PicID) ON DELETE CASCADE
+	PicID INTEGER
 );
 
 CREATE TABLE WalkLandMarks 
@@ -42,7 +37,8 @@ CREATE TABLE WalkImages
 	PicID INTEGER PRIMARY KEY AUTO_INCREMENT,
 	WID INTEGER, 
 	FileLocation VARCHAR(200),
-	IsCopyright TINYINT(1) DEFAULT 0
+	IsCopyright TINYINT(1) DEFAULT 0,
+	FOREIGN KEY (WID) REFERENCES Walks(WID) ON DELETE CASCADE
 );
 
 CREATE TABLE LandMarkImages 
@@ -50,7 +46,8 @@ CREATE TABLE LandMarkImages
 	PicID INTEGER PRIMARY KEY AUTO_INCREMENT,
 	LID INTEGER,
 	FileLocation VARCHAR(200),
-	IsCopyright TINYINT(1) DEFAULT 0
+	IsCopyright TINYINT(1) DEFAULT 0,
+	FOREIGN KEY (LID) REFERENCES LandMarks(LID) ON DELETE CASCADE
 );
 
 /* out dated */
@@ -59,14 +56,16 @@ CREATE TABLE LandMarkDescription
 	DesID INTEGER PRIMARY KEY AUTO_INCREMENT,
 	LID INTEGER,
 	WID INTEGER,
-	Description VARCHAR(1000)
+	Description VARCHAR(1000),
+	FOREIGN KEY (LID) REFERENCES LandMarks(LID) ON DELETE CASCADE	
 );
 
 CREATE TABLE QRCodes
 (
 	QRCID INTEGER PRIMARY KEY AUTO_INCREMENT,
 	LID INTEGER,
-	RawCode VARCHAR(625)
+	RawCode VARCHAR(625),
+	FOREIGN KEY (LID) REFERENCES LandMarks(LID) ON DELETE CASCADE
 );
 
 /* Joins Walks with LandMarks via WalkLandMarks */
@@ -78,12 +77,12 @@ JOIN LandMarks ON LandMarkID = LID;
 /* Updates the nunmber of Landmarks for Walks */
 
 UPDATE walks
-SET NumberOfLandMarks = (SELECT COUNT (LandMarkID) FROM WalkLandMarks WHERE WID = WalkID);
+SET NumberOfLandMarks = (SELECT COUNT(LandMarkID) FROM WalkLandMarks WHERE WID = WalkID);
 
 /* Updates the nunmber of walks for Landmarks */
 
 UPDATE LandMarks
-SET NumberOfWalks = (SELECT COUNT (WalkID) FROM WalkLandMarks WHERE LID = LandMarkID); 
+SET NumberOfWalks = (SELECT COUNT(WalkID) FROM WalkLandMarks WHERE LID = LandMarkID); 
 
 /* Updates the WalkLength, with place holders for PHP code */
 

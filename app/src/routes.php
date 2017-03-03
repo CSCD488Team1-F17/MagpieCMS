@@ -13,4 +13,16 @@
 
         return $response;
     });
+
+    $app->get('/api/all', function (Request $request, Response $response){
+        $conn = connect_db();
+	    $output = $conn->query("SELECT * FROM Walks;");
+	    if ($output->num_rows > 0) {
+    	    while($row = $output->fetch_assoc()) {
+        	    echo json_encode($row);
+    	    }
+	    } else {
+   		    echo "0 results";
+	    }
+    });
 ?>

@@ -7,11 +7,12 @@
         return $this->renderer->render($response, 'index.html', $args);
     });
 
-    $app->get('/hello/{name}', function (Request $request, Response $response) {
-        $name = $request->getAttribute('name');
-        $response->getBody()->write("Hello, $name");
+    $app->get('/login', function (Request $request, Response $response, $args) {
+        return $this->renderer->render($response, 'login.html', $args);
+    });
 
-        return $response;
+    $app->get('/login-success', function (Request $request, Response $response, $args) {
+        echo "success!";
     });
 
     $app->get('/api/all', function (Request $request, Response $response){

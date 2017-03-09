@@ -9,7 +9,6 @@ CREATE TABLE Walks
 	NumberOfLandMarks INTEGER DEFAULT 0, 
 	WalkLength DOUBLE DEFAULT 0.0,
 	IsOrder TINYINT(1) DEFAULT 0,
-	WalkPreviewID INTEGER DEFAULT 0,
 	PicID INTEGER DEFAULT 0
 );
 
@@ -62,21 +61,32 @@ CREATE TABLE LandMarkDescription
 	FOREIGN KEY (LID) REFERENCES LandMarks(LID) ON DELETE CASCADE ON UPDATE CASCADE	
 );
 
+CREATE TABLE WebUserData
+(
+	UserID INTEGER PRIMARY KEY,
+	UserName VARCHAR(50) DEFAULT "{ EMPTY }",
+	UserEmail VARCHAR(100) DEFAULT "{ EMPTY }"
+);
+
+CREATE TABLE AppUserData
+(
+	UserID INTEGER PRIMARY KEY,
+	UserName VARCHAR(50) DEFAULT "{ EMPTY }",
+	UserEmail VARCHAR(100) DEFAULT "{ EMPTY }"
+);
+
 /* Joins Walks with LandMarks via WalkLandMarks */
 
 SELECT WID, Walks.Name, LID, LandMarks.Name
 FROM WalkLandMarks LEFT JOIN Walks ON WalkID = WID
 JOIN LandMarks ON LandMarkID = LID;
 
-SELECT Walks.WID, LandMarks.LID, LandMarks.Name, Longitude, Latitude, NumberOfWalks, LandMarkDescription.Description, QRCode, FileLocation, ImageType
-FROM WalkLandMarks LEFT JOIN Walks ON WalkID = Walks.WID
-JOIN LandMarks ON LandMarkID = LandMarks.LID
-JOIN LandMarkImages ON LandMarks.LID = LandMarkImages.LID AND LandMarks.PicID = LandMarkImages.PicID
-JOIN LandMarkDescription ON LandMarks.LID = LandMarkDescription.LID AND Walks.WID = LandMarkDescription.WID AND LandMarks.Description = LandMarkDescription.DesID;
+/* Find all info for the Walk and its landmarks */
 
 SELECT Walks.WID, LandMarks.LID, LandMarks.Name, Longitude, Latitude, LandMarkDescription.Description, QRCode
 FROM WalkLandMarks LEFT JOIN Walks ON WalkID = Walks.WID LEFT JOIN LandMarks ON LandMarkID = LandMarks.LID
 LEFT JOIN LandMarkDescription ON LandMarks.LID = LandMarkDescription.LID AND LandMarks.Description = LandMarkDescription.DesID
+WHERE Walks.WID = /*{0}*/
 ORDER BY `Walks`.`WID` ASC
 
 /* Updates the nunmber of Landmarks for Walks */
@@ -94,3 +104,13 @@ SET NumberOfWalks = (SELECT COUNT(WalkID) FROM WalkLandMarks WHERE LID = LandMar
 UPDATE Walks
 SET WalkLength = /*{0}*/
 WHERE WID = /*{1}*/;
+
+/* add walk */
+
+INSERT INTO Walks (Name, Description, IsOrder, WalkPreviewID, PicID) 
+VALUES (/*{0}*/, /*{1}*/, /*{2}*/, /*{3}*/, /*{4}*/);
+
+/* add landmark */
+
+INSERT INTO LandMarks (Name, Longitude, Latitude, Description, QRCode, PicID) 
+VALUES (/*{0}*/, /*{1}*/, /*{2}*/, /*{3}*/, /*{4}*/, /*{5}*/);

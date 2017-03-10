@@ -75,4 +75,23 @@
         $stmt->close();
         $conn->close();
     });
+	
+	
+	$app->post('/api/landmark', function(Request $request)
+	{
+		$parsedBody = $request->getParsedBody();
+		$lid = json_decode($parsedBody["Lid"], true);
+		$name = json_decode($parsedBody["Name"], true);
+		$long = json_decode($parsedBody["Longitude"], true);
+		$lat = json_decode($parsedBody["Latitude"], true);
+		$walkCount = json_decode($parsedBody["NumberOfWalks"], true);
+		$description = json_decode($parsedBody["Description"], true);
+		
+		//store landmark in DB
+		$conn = connect_db();
+		$stmt = $conn->prepare("INSERT INTO LandMarks (Lid, Name, Longitude, Latitude, NumberOfWalks, Description) VALUES ($lid, $name, $long, $lat, $walkCount, $description)");
+		$stmt->execute();
+		$stmt->close();
+		$conn->close();
+	});
 ?>

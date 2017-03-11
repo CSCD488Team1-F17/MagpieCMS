@@ -2,11 +2,11 @@
 
 function connect_db(){
 	$server = "localhost";
-	$user = "root";
-	$pass = "supersecretpw2016";
+	$user = "magpiehu_admin";
+	$pass = "";
 	$database = "magpiecms";
-	$connection = new mysqli($server, $user, $pass, $database);
-
+	$connection = new PDO("mysql:host=$server;dbname=$database" ,$user, $pass);
+	$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	return $connection;
 }
 

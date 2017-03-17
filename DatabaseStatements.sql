@@ -82,11 +82,9 @@ FROM WalkLandMarks LEFT JOIN Walks ON WalkID = WID
 JOIN LandMarks ON LandMarkID = LID;
 
 /* Find all info for the Walk and its landmarks */
-
-SELECT Walks.WID, LandMarks.LID, LandMarks.Name, Longitude, Latitude, LandMarkDescription.Description, QRCode
-FROM WalkLandMarks LEFT JOIN Walks ON WalkID = Walks.WID LEFT JOIN LandMarks ON LandMarkID = LandMarks.LID
-LEFT JOIN LandMarkDescription ON LandMarks.LID = LandMarkDescription.LID AND LandMarks.Description = LandMarkDescription.DesID
-WHERE Walks.WID = /*{0}*/
+SELECT DISTINCT Walks.WID, LandMarks.LID, LandMarks.Name, Longitude, Latitude, LandMarkDescription.Description, QRCode
+FROM LandMarkDescription, WalkLandMarks, Walks, LandMarks
+WHERE Walks.WID = /*{0}*/ AND LandMarks.LID = WalkLandMarks.LandMarkID AND Walks.WID = WalkLandMarks.WalkID
 ORDER BY `Walks`.`WID` ASC
 
 /* Updates the nunmber of Landmarks for Walks */

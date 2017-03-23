@@ -1,114 +1,129 @@
 /* Tested under SQLite, Brad Howard @ 20:29 on 3/2/2017 */
 CREATE DATABASE MagpieDB;
 
-CREATE TABLE Walks 
+CREATE TABLE Collections 
 (
-	WID INTEGER PRIMARY KEY AUTO_INCREMENT,
-	Name VARCHAR(100) NOT NULL,
-	Description VARCHAR(1000) NOT NULL, 
-	NumberOfLandMarks INTEGER DEFAULT 0, 
-	WalkLength DOUBLE DEFAULT 0.0,
-	IsOrder TINYINT(1) DEFAULT 0,
-	PicID INTEGER DEFAULT 0
+	'CID' INTEGER PRIMARY KEY AUTO_INCREMENT,
+	'IsActive' TINYINT(1) DEFAULT 1,
+	'Name' VARCHAR(100) NOT NULL,
+	'City' VARCHAR(100) DEFAULT "Spokane",
+	'State' VARCHAR(100) DEFAULT "Washington",
+	'Rating' VARCHAR(100) DEFAULT "E",
+	'Description' VARCHAR(1000) NOT NULL, 
+	'NumberOfLandMarks' INTEGER DEFAULT 0, 
+	'CollectionLength' DOUBLE DEFAULT 0.0,
+	'IsOrder' TINYINT(1) DEFAULT 0,
+	'PicID' INTEGER DEFAULT 0
 );
 
-CREATE TABLE LandMarks
+CREATE TABLE Landmarks
 (
-	LID INTEGER PRIMARY KEY AUTO_INCREMENT,
-	Name VARCHAR(100) NOT NULL,
-	Longitude DOUBLE DEFAULT 0.0, 
-	Latitude DOUBLE DEFAULT 0.0, 
-	NumberOfWalks INTEGER DEFAULT 0,
-	Description INTEGER DEFAULT 0,
-	QRCode VARCHAR(625) DEFAULT "{ EMPTY }",
-	PicID INTEGER DEFAULT = 0
+	'LID' INTEGER PRIMARY KEY AUTO_INCREMENT,
+	'Name' VARCHAR(100) NOT NULL,
+	'Longitude' DOUBLE DEFAULT 0.0, 
+	'Latitude' DOUBLE DEFAULT 0.0, 
+	'NumberOfWalks' INTEGER DEFAULT 0,
+	'Description' INTEGER DEFAULT 0,
+	'QRCode' VARCHAR(625) DEFAULT "{ EMPTY }",
+	'PicID' INTEGER DEFAULT = 0
 );
 
-CREATE TABLE WalkLandMarks 
+CREATE TABLE CollectionLandmarks 
 (
-	WalkID INTEGER NOT NULL REFERENCES Walks(WID) ON DELETE CASCADE ON UPDATE CASCADE, 
-	LandMarkID INTEGER NOT NULL REFERENCES LandMarks(LID) ON DELETE CASCADE ON UPDATE CASCADE, 
+	'CollectionID' INTEGER NOT NULL REFERENCES Collections(CID) ON DELETE CASCADE ON UPDATE CASCADE, 
+	'LandMarkID' INTEGER NOT NULL REFERENCES LandMarks(LID) ON DELETE CASCADE ON UPDATE CASCADE, 
 	PRIMARY KEY (WalkID, LandMarkID)
 );
 
-CREATE TABLE WalkImages 
+CREATE TABLE CollectionImages 
 (
-	PicID INTEGER PRIMARY KEY AUTO_INCREMENT,
-	WID INTEGER DEFAULT 0, 
-	FileLocation VARCHAR(200) DEFAULT "{ EMPTY }",
-	ImageType VARCHAR(50) DEFAULT "{ EMPTY }",
-	IsCopyright TINYINT(1) DEFAULT 0,
-	FOREIGN KEY (WID) REFERENCES Walks(WID) ON DELETE CASCADE ON UPDATE CASCADE
+	'PicID' INTEGER PRIMARY KEY AUTO_INCREMENT,
+	'CID' INTEGER DEFAULT 0, 
+	'FileLocation' VARCHAR(200) DEFAULT "{ EMPTY }",
+	'ImageType' VARCHAR(50) DEFAULT "{ EMPTY }",
+	'IsCopyright' TINYINT(1) DEFAULT 0,
+	FOREIGN KEY (CID) REFERENCES Collections(CID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE LandMarkImages 
+CREATE TABLE LandmarkImages 
 (
-	PicID INTEGER PRIMARY KEY AUTO_INCREMENT,
-	LID INTEGER DEFAULT 0,
-	FileLocation VARCHAR(200) DEFAULT "{ EMPTY }",
-	ImageType VARCHAR(50) DEFAULT "{ EMPTY }",
-	IsCopyright TINYINT(1) DEFAULT 0,
+	'PicID' INTEGER PRIMARY KEY AUTO_INCREMENT,
+	'LID' INTEGER DEFAULT 0,
+	'FileLocation' VARCHAR(200) DEFAULT "{ EMPTY }",
+	'ImageType' VARCHAR(50) DEFAULT "{ EMPTY }",
+	'IsCopyright' TINYINT(1) DEFAULT 0,
 	FOREIGN KEY (LID) REFERENCES LandMarks(LID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 /* out dated */
-CREATE TABLE LandMarkDescription
+CREATE TABLE LandmarkDescription
 (
-	DesID INTEGER PRIMARY KEY AUTO_INCREMENT,
-	LID INTEGER DEFAULT 0,
-	WID INTEGER DEFAULT 0,
-	Description VARCHAR(1000) DEFAULT "{ EMPTY }",
-	FOREIGN KEY (LID) REFERENCES LandMarks(LID) ON DELETE CASCADE ON UPDATE CASCADE	
+	'DesID' INTEGER PRIMARY KEY AUTO_INCREMENT,
+	'LID' INTEGER DEFAULT 0,
+	'CID' INTEGER DEFAULT 0,
+	'Description' VARCHAR(1000) DEFAULT "{ EMPTY }",
+	FOREIGN KEY (LID) REFERENCES LandMarks(LID) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (CID) REFERENCES Collections(CID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE WebUserData
 (
-	UserID INTEGER PRIMARY KEY,
-	UserName VARCHAR(50) DEFAULT "{ EMPTY }",
-	UserEmail VARCHAR(100) DEFAULT "{ EMPTY }"
+	'UserID' INTEGER PRIMARY KEY,
+	'UserName' VARCHAR(50) DEFAULT "{ EMPTY }",
+	'UserEmail' VARCHAR(100) DEFAULT "{ EMPTY }",
+	'UserData' VARCHAR(5000) DEFAULT "{ EMPTY }"
 );
 
 CREATE TABLE AppUserData
 (
-	UserID INTEGER PRIMARY KEY,
-	UserName VARCHAR(50) DEFAULT "{ EMPTY }",
-	UserEmail VARCHAR(100) DEFAULT "{ EMPTY }"
+	'UserID' INTEGER PRIMARY KEY,
+	'UserName' VARCHAR(50) DEFAULT "{ EMPTY }",
+	'UserEmail' VARCHAR(100) DEFAULT "{ EMPTY }",
+	'UserData' VARCHAR(5000) DEFAULT "{ EMPTY }"
 );
 
 /* Joins Walks with LandMarks via WalkLandMarks */
 
-SELECT WID, Walks.Name, LID, LandMarks.Name
-FROM WalkLandMarks LEFT JOIN Walks ON WalkID = WID
-JOIN LandMarks ON LandMarkID = LID;
+SELECT CID, Collections.Name, LID, Landmarks.Name
+FROM CollectionLandmarks LEFT JOIN Collections ON CollectionID = CID
+JOIN Landmarks ON LandmarkID = LID;
 
 /* Find all info for the Walk and its landmarks */
-SELECT DISTINCT Walks.WID, LandMarks.LID, LandMarks.Name, Longitude, Latitude, LandMarkDescription.Description, QRCode
-FROM LandMarkDescription, WalkLandMarks, Walks, LandMarks
-WHERE Walks.WID = /*{0}*/ AND LandMarks.LID = WalkLandMarks.LandMarkID AND Walks.WID = WalkLandMarks.WalkID
-ORDER BY `Walks`.`WID` ASC
+SELECT DISTINCT Landmarks.LID, Landmarks.Name, Longitude, Latitude, LandmarkDescription.Description, QRCode
+FROM LandmarkDescription, CollectionLandmarks, Collections, Landmarks
+WHERE Collections.CID = ? AND Landmarks.LID = CollectionLandmarks.LandMarkID AND Collections.CID = CollectionLandmarks.CollectionID AND DesID = DescID
+ORDER BY Collections.CID ASC
 
 /* Updates the nunmber of Landmarks for Walks */
 
-UPDATE walks
-SET NumberOfLandMarks = (SELECT COUNT(LandMarkID) FROM WalkLandMarks WHERE WID = WalkID);
+UPDATE Collections
+SET NumberOfLandMarks = (SELECT COUNT(LandMarkID) FROM CollectionLandmarks WHERE CID = CollectionID);
 
 /* Updates the nunmber of walks for Landmarks */
 
-UPDATE LandMarks
-SET NumberOfWalks = (SELECT COUNT(WalkID) FROM WalkLandMarks WHERE LID = LandMarkID); 
+UPDATE Landmarks
+SET NumberOfCollections = (SELECT COUNT(CollectionID) FROM CollectionLandmarks WHERE LID = LandmarkID); 
 
 /* Updates the WalkLength, with place holders for PHP code */
 
-UPDATE Walks
-SET WalkLength = /*{0}*/
-WHERE WID = /*{1}*/;
+UPDATE Collections
+SET CollectionLength = ?
+WHERE CID = ?;
 
 /* add walk */
 
-INSERT INTO Walks (Name, Description, IsOrder, WalkPreviewID, PicID) 
-VALUES (/*{0}*/, /*{1}*/, /*{2}*/, /*{3}*/, /*{4}*/);
+INSERT INTO Collections (Name, City, 'State', Rating, Description, IsOrder, PicID) 
+VALUES (?, ?, ?, ?, ?, ?, ?);
 
 /* add landmark */
 
-INSERT INTO LandMarks (Name, Longitude, Latitude, Description, QRCode, PicID) 
-VALUES (/*{0}*/, /*{1}*/, /*{2}*/, /*{3}*/, /*{4}*/, /*{5}*/);
+INSERT INTO Landmarks (Name, Longitude, Latitude, Description, QRCode, PicID) 
+VALUES (?, ?, ?, ?, ?, ?);
+
+/* Deactivate a Collection */
+
+UPDATE Collections
+SET IsActive = 0
+WHERE CID = ?;
+
+/* (~+.+)~ ~(>.<~) ~(O.o~) ~(@.@;~) ~(-_-~) ~(OwO~) */

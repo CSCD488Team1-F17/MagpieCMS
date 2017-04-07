@@ -5,6 +5,8 @@
     $settings = require '../src/settings.php';
     $app = new \Slim\App($settings);
 
+    $container = $app->getContainer();
+
     $container['view'] = function ($container) {
         $view = new \Slim\Views\Twig('templates', [
             'cache' => 'false'

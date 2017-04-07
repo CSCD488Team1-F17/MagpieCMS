@@ -15,6 +15,10 @@
         echo "success!";
     });
 
+    $app->get('/handlebars', function($req, $res, $args){
+        return $this->view->render($res, 'create.twig');
+    })->setName('profile');
+
     $app->get('/api/collection/', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();

@@ -60,10 +60,16 @@
         $conn = null;
     });
 
-    $app->get('/image/test', function (Request $request, Response $response){
-        $image = file_get_contents('../Resources/Images/test.jpg');
+    $app->get('/image/logo/{wid}', function (Request $request, Response $response){
+        //$imgName = (string)$request->getAttribute('imageid');
+        $conn = connect_db();
+        $wid = (int)$request->getAttribute('wid');
+        $stmt = $conn->prepare("SELECT FileLocation FROM CollectionImages INNER JOIN Collections ON Collections.PicID = CollectionImages.PicID WHERE Collections.CID = ?;");
+        $stmt->execute([$wid]);
+        $result = $stmt->fetch();
+        $image = file_get_contents('../Resources/Images/' . $result['FileLocation']);
         $response->write($image);
-        return $response->withHeader('Content-Type', 'image/jpg');
+        return $response->withHeader('Content-Type', 'image/png');
         //echo $image;
     });
 ?>

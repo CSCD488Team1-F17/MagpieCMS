@@ -66,4 +66,25 @@
         return $response->withHeader('Content-Type', 'image/jpg');
         //echo $image;
     });
+	
+	
+	$app->post('/database/collection', function(Request $request){
+		$cid = (int)$request->getParsedBodyParam("CID", $default = null);
+		$isActive = (int)$request->getParsedBodyParam("IsActive", $default = null);
+		$name = $request->getParsedBodyParam("Name", $default = null);
+		$city = $request->getParsedBodyParam("City", $default = null);
+		$state = $request->getParsedBodyParam("State", $default = null);
+		$rating = $request->getParsedBodyParam("Rating", $default = null);
+		$description = $request->getParsedBodyParam("Description", $default = null);
+		$numberOfLandmarks = (int)$request->getParsedBodyParam("NumberOfLandMarks", $default = null);
+		$collectionLength = (double)$request->getParsedBodyParam("CollectionLength", $default = null);
+		$isOrder = (int)$request->getParsedBodyParam("IsOrder", $default = null);
+		$picID = (int)$request->getParsedBodyParam("PicID", $default = null);
+		
+		$conn = connect_db();	
+		$stmt = $conn->prepare("INSERT INTO collections (CID, IsActive, Name, City, State, Rating, Description, NumberOfLandMarks, CollectionLength, IsOrder, PicID)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->execute([$cid, $isActive, $name, $city, $state, $rating, $description, $numberOfLandmarks, $collectionLength, $isOrder, $picID]);
+		$conn = null;
+	});
 ?>

@@ -9,7 +9,7 @@
 
     $container['view'] = function ($container) {
         $view = new \Slim\Views\Twig('../templates', [
-            'cache' => 'false'
+            'cache' => false
         ]);
         
         $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');

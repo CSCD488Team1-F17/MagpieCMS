@@ -15,9 +15,9 @@
         echo "success!";
     });
 
-    $app->get('/handlebars', function($req, $res, $args){
+    $app->get('/test', function($req, $res, $args){
         return $this->view->render($res, 'create.twig');
-    })->setName('profile');
+    });
 
     $app->get('/api/collection/', function (Request $request, Response $response){
         $ara = array();

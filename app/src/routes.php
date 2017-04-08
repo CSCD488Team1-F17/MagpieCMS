@@ -68,21 +68,23 @@
     });
 	
 	
-	$app->post('/api/landmark', function(Request $request)
-	{
-		$parsedBody = $request->getParsedBody();
-		$lid = json_decode($parsedBody["Lid"], true);
-		$name = json_decode($parsedBody["Name"], true);
-		$long = json_decode($parsedBody["Longitude"], true);
-		$lat = json_decode($parsedBody["Latitude"], true);
-		$walkCount = json_decode($parsedBody["NumberOfWalks"], true);
-		$description = json_decode($parsedBody["Description"], true);
+	$app->post('/database/collection', function(Request $request){
+		$cid = (int)$request->getParsedBodyParam("CID", $default = null);
+		$isActive = (int)$request->getParsedBodyParam("IsActive", $default = null);
+		$name = $request->getParsedBodyParam("Name", $default = null);
+		$city = $request->getParsedBodyParam("City", $default = null);
+		$state = $request->getParsedBodyParam("State", $default = null);
+		$rating = $request->getParsedBodyParam("Rating", $default = null);
+		$description = $request->getParsedBodyParam("Description", $default = null);
+		$numberOfLandmarks = (int)$request->getParsedBodyParam("NumberOfLandMarks", $default = null);
+		$collectionLength = (double)$request->getParsedBodyParam("CollectionLength", $default = null);
+		$isOrder = (int)$request->getParsedBodyParam("IsOrder", $default = null);
+		$picID = (int)$request->getParsedBodyParam("PicID", $default = null);
 		
-		//store landmark in DB
-		$conn = connect_db();
-		$stmt = $conn->prepare("INSERT INTO LandMarks (Lid, Name, Longitude, Latitude, NumberOfWalks, Description) VALUES ($lid, $name, $long, $lat, $walkCount, $description)");
-		$stmt->execute();
-		$stmt->close();
-		$conn->close();
+		$conn = connect_db();	
+		$stmt = $conn->prepare("INSERT INTO collections (CID, IsActive, Name, City, State, Rating, Description, NumberOfLandMarks, CollectionLength, IsOrder, PicID)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->execute([$cid, $isActive, $name, $city, $state, $rating, $description, $numberOfLandmarks, $collectionLength, $isOrder, $picID]);
+		$conn = null;
 	});
 ?>

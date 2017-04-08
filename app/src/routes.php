@@ -19,6 +19,7 @@
         return $this->view->render($res, 'create.twig');
     });
 
+    //api calls
     $app->get('/api/collection/', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();
@@ -97,4 +98,12 @@
 		$stmt->execute([$cid, $isActive, $name, $city, $state, $rating, $description, $numberOfLandmarks, $collectionLength, $isOrder, $picID]);
 		$conn = null;
 	});
+
+    // $app->post('/database/user', function(Request $request){
+    //     $params = $request->getParsedBody();
+
+    //     $id_token = $params['id_token'];
+
+        
+	// });
 ?>

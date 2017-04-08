@@ -1,15 +1,36 @@
 function onSignIn(googleUser){
-    //window.open("login-success","_self")
+    var id_token = googleUser.getAuthResponse().id_token;
+    
+    //Get base url
+    var pathArray = location.href.split( '/' );
+    var protocol = pathArray[0];
+    var host = pathArray[2];
+    var url = protocol + '//' + host;
 
-    var profile = googleUser.getBasicProfile();
+    //Verify token
+    //Move verify to backend for better security
+    $.ajax({
+        type: 'POST',
+        url: 'https://www.googleapis.com/oauth2/v3/tokeninfo',
+        dataType: "json",
+        data: {
+            'id_token' : id_token
+        },
+        success: function (ret) {
+            var profile = googleUser.getBasicProfile();
 
-    var name = profile.getName();
-    var icon = profile.getImageUrl();
+            var name = profile.getName();
+            var icon = profile.getImageUrl();
 
-    var content = '' +
-    '<h1>Hello ' + name + '</h1>' +
-    '<img src="' + icon + '">' +
-    '';
+            var content = '' +
+            '<h1>Hello ' + name + '</h1>' +
+            '<img src="' + icon + '">' +
+            '';
 
-    $("#userInfo").html(content);
+            $("#userInfo").html(content);
+        },
+        error: function (err){
+            console.log("Error logging in.");
+        }
+    });
 }

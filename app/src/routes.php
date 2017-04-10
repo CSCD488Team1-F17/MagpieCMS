@@ -11,8 +11,8 @@
         return $this->renderer->render($response, 'login.html', $args);
     });
 
-    $app->get('/login-success', function (Request $request, Response $response, $args) {
-        echo "success!";
+    $app->get('/dashboard', function($req, $res, $args){
+        return $this->view->render($res, 'dashboard.twig');
     });
 
     $app->get('/test', function($req, $res, $args){

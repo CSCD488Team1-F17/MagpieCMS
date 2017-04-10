@@ -8,7 +8,7 @@ function onSignIn(googleUser){
     var url = protocol + '//' + host;
 
     //Verify token
-    //Move verify to backend for better security
+    //TODO: Move verify to backend for better security
     $.ajax({
         type: 'POST',
         url: 'https://www.googleapis.com/oauth2/v3/tokeninfo',
@@ -17,17 +17,21 @@ function onSignIn(googleUser){
             'id_token' : id_token
         },
         success: function (ret) {
-            var profile = googleUser.getBasicProfile();
+            //TODO: Do backend stuff here.
 
-            var name = profile.getName();
-            var icon = profile.getImageUrl();
+            window.location.href = url + "/dashboard";
 
-            var content = '' +
-            '<h1>Hello ' + name + '</h1>' +
-            '<img src="' + icon + '">' +
-            '';
+            // var profile = googleUser.getBasicProfile();
 
-            $("#userInfo").html(content);
+            // var name = profile.getName();
+            // var icon = profile.getImageUrl();
+
+            // var content = '' +
+            // '<h1>Hello ' + name + '</h1>' +
+            // '<img src="' + icon + '">' +
+            // '';
+
+            // $("#userInfo").html(content);
         },
         error: function (err){
             console.log("Error logging in.");

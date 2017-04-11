@@ -4,13 +4,41 @@
     <div class="container">
         <h1>CREATE YOUR COLLECTION</h1>
         <div class="row">
-            <div class="col-md-2"></div>
+            <div class="col-md-1"></div>
             <div class="col-md-6">
-                <label>NAME</label>
+                <h4 style="color:#52D291"><strong>NAME</strong></h4>
+                <div></div>
                 <label>What is the collection name you'd like scavengers to see?</label> 
-                 <textarea class="form-control" rows="1" id="message"></textarea>
+                <textarea class="form-control" rows="1" id="name"></textarea>
+                <div style="padding: 15px"></div>
+                <h4 style="color:#52D291"><strong>ABBREVIATION</strong></h4>
+                <div></div>
+                <label>What is the three letter abbreviation you'd like scavengers to see?</label> 
+                <textarea class="form-control" rows="1" id="abbreviation" style="width:25%"></textarea>
+                <div style="padding: 15px"></div>
+                <h4 style="color:#52D291"><strong>SUMMARY</strong></h4>
+                <div></div>
+                <label>Please provide a brief description of your collection. Description can include information such as: general location, types of badges to expect, purpose, etc.</label> 
+                <textarea class="form-control" rows="6" id="summary"></textarea>
+                <div style="padding: 15px"></div>
+                <h4 style="color:#52D291"><strong>SUPERBADGE</strong></h4>
+                <div></div>
+                <label>Upload a PNG icon that represents your entire colleciton.</label>
+                <div class="row">
+                    <div class="col-md-9">
+                        <textarea class="form-control" rows="1" id="superbadge"></textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-primary pull-right" id="submit" style="border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;">Browse</button>
+                    </div>
+                </div>
+                <div style="padding: 30px"></div>
+                <h4 style="color:#52D291"><strong>BADGE QUANTITY</strong></h4>
+                <div></div>
+                <label>For now, how many badges will be in your collection</label> 
+                <textarea class="form-control" rows="1" id="badgeq" style="width:25%"></textarea> 
             </div>
-            <div class="col-md-4"></div>
+            <div class="col-md-5"></div>
         </div>
     </div>
 {% endblock %}

@@ -117,7 +117,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?);
 
 /* add landmark */
 
-INSERT INTO Landmarks (Name, Longitude, Latitude, Description, QRCode, PicID) 
+INSERT INTO Landmarks (Name, Longitude, Latitude, DescID, QRCode, PicID) 
 VALUES (?, ?, ?, ?, ?, ?);
 
 /* Deactivate a Collection */

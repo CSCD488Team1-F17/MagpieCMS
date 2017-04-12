@@ -79,7 +79,6 @@
 	
 	
 	$app->post('/database/collection', function(Request $request){
-		$cid = (int)$request->getParsedBodyParam("CID", $default = null);
 		$isActive = (int)$request->getParsedBodyParam("IsActive", $default = null);
 		$name = $request->getParsedBodyParam("Name", $default = null);
 		$city = $request->getParsedBodyParam("City", $default = null);
@@ -92,9 +91,9 @@
 		$picID = (int)$request->getParsedBodyParam("PicID", $default = null);
 		
 		$conn = connect_db();	
-		$stmt = $conn->prepare("INSERT INTO collections (CID, IsActive, Name, City, State, Rating, Description, NumberOfLandMarks, CollectionLength, IsOrder, PicID)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->execute([$cid, $isActive, $name, $city, $state, $rating, $description, $numberOfLandmarks, $collectionLength, $isOrder, $picID]);
+		$stmt = $conn->prepare("INSERT INTO collections (IsActive, Name, City, State, Rating, Description, NumberOfLandMarks, CollectionLength, IsOrder, PicID)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		$stmt->execute([$isActive, $name, $city, $state, $rating, $description, $numberOfLandmarks, $collectionLength, $isOrder, $picID]);
 		$conn = null;
 	});
 ?>

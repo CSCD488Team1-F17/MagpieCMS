@@ -31,6 +31,11 @@
                     <div class="col-md-3">
                         <button type="button" class="btn btn-primary pull-right" id="submit" style="border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;">Browse</button>
                     </div>
+                    <form method="POST" action="/upload" enctype="multipart/form-data">
+                            <label>Select file to upload:</label>
+                            <input type="file" name="newfile">
+                            <button type="submit">Upload</button>
+                    </form>
                 </div>
                 <div style="padding: 30px"></div>
                 <h4 style="color:#52D291"><strong>BADGE QUANTITY</strong></h4>

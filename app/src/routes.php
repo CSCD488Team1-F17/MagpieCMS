@@ -7,16 +7,8 @@
         return $this->renderer->render($response, 'index.html', $args);
     });
 
-    $app->get('/login', function (Request $request, Response $response, $args) {
-        return $this->renderer->render($response, 'login.html', $args);
-    });
-
     $app->get('/dashboard', function($req, $res, $args){
         return $this->view->render($res, 'dashboard.twig');
-    });
-
-    $app->get('/test', function($req, $res, $args){
-        return $this->view->render($res, 'create.twig');
     });
 
     //api calls

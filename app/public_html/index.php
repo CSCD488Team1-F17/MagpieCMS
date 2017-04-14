@@ -21,6 +21,8 @@
     require '../src/dbconnection.php';
     require '../src/dependencies.php';
     require '../src/routes.php';
+	
+	require '../phpqrcode/qrlib.php';
 
     $app->run();
 ?>

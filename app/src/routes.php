@@ -77,18 +77,17 @@
         //echo $image;
     });
 	
-	
 	$app->post('/database/collection', function(Request $request){
-		$isActive = (int)$request->getParsedBodyParam("IsActive", $default = null);
+		$isActive = (int)$request->getParsedBodyParam("IsActive", $default = 1);
 		$name = $request->getParsedBodyParam("Name", $default = null);
-		$city = $request->getParsedBodyParam("City", $default = null);
-		$state = $request->getParsedBodyParam("State", $default = null);
-		$rating = $request->getParsedBodyParam("Rating", $default = null);
+		$city = $request->getParsedBodyParam("City", $default = "Spokane");
+		$state = $request->getParsedBodyParam("State", $default = "Washington");
+		$rating = $request->getParsedBodyParam("Rating", $default = "E");
 		$description = $request->getParsedBodyParam("Description", $default = null);
-		$numberOfLandmarks = (int)$request->getParsedBodyParam("NumberOfLandMarks", $default = null);
-		$collectionLength = (double)$request->getParsedBodyParam("CollectionLength", $default = null);
-		$isOrder = (int)$request->getParsedBodyParam("IsOrder", $default = null);
-		$picID = (int)$request->getParsedBodyParam("PicID", $default = null);
+		$numberOfLandmarks = (int)$request->getParsedBodyParam("NumberOfLandMarks", $default = 0);
+		$collectionLength = (double)$request->getParsedBodyParam("CollectionLength", $default = 0);
+		$isOrder = (int)$request->getParsedBodyParam("IsOrder", $default = 0);
+		$picID = (int)$request->getParsedBodyParam("PicID", $default = 0);
 		
 		$conn = connect_db();	
 		$stmt = $conn->prepare("INSERT INTO collections (IsActive, Name, City, State, Rating, Description, NumberOfLandMarks, CollectionLength, IsOrder, PicID)
@@ -96,4 +95,18 @@
 		$stmt->execute([$isActive, $name, $city, $state, $rating, $description, $numberOfLandmarks, $collectionLength, $isOrder, $picID]);
 		$conn = null;
 	});
+	
+	$app->get('/qrcode/{cid}', function (Request $request, Response $response){
+		$conn = connect_db();
+        $cid = (int)$request->getAttribute('cid');
+        $stmt = $conn->prepare("SELECT Name FROM collections WHERE Collections.CID = ?;");
+        $stmt->execute([$cid]);
+        $result = $stmt->fetch();
+		$path = '../Resources/QRcodes/'.$cid.'.png';
+		$name = $result['Name'];
+		QRcode::png($name, $path);
+		$image = file_get_contents($path);
+		$response->write($image);
+		return $response->withHeader('Content-Type', 'image/png');
+    });
 ?>

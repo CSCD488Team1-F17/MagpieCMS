@@ -28,7 +28,7 @@
         $newfile = $files['newfile'];
         if ($newfile->getError() === UPLOAD_ERR_OK) {
             $uploadFileName = $newfile->getClientFilename();
-            $newfile->moveTo("/../public_html/img/$uploadFileName");
+            $newfile->moveTo("../public_html/img/$uploadFileName");
         }
     });
 

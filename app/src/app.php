@@ -2,8 +2,11 @@
     //Load Slim App class
     require '../vendor/autoload.php';
     
+    //Set up our settings variables
     $slimSettings = require 'settings.php';
     $config = require 'config.php';
+    
+    //Define our app
     $app = new \Slim\App($slimSettings);
 
     $container = $app->getContainer();
@@ -19,9 +22,11 @@
         return $view;
     };
 
+    //Load stuff
     require 'dbconnection.php';
     require 'dependencies.php';
-    require './routes/routes.php';
+    require 'routes/routes.php';
 
+    //Run the app
     $app->run();
 ?>

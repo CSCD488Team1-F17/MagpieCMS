@@ -1,4 +1,4 @@
 <?php
-    //Start app
+    //Start the app
     require '../src/app.php';
 ?>

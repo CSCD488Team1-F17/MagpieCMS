@@ -1,14 +1,36 @@
 <?php
+    use \Psr\Http\Message\ServerRequestInterface as Request;
+    use \Psr\Http\Message\ResponseInterface as Response;
+    
+    //Helper functions
+    function authCheck($path, $app, Request $request, Response $response, $args){
+        
+        session_start();
+
+        $config = require dirname(__FILE__, 2) . '/config.php';
+        
+        $client = new Google_Client();
+        $client->setAuthConfig($config->credentialsFile);
+
+        if(isset($_SESSION['access_token']) && $_SESSION['access_token']){
+            $client->setAccessToken($_SESSION['access_token']);
+            return $app->view->render($response, $path);
+        } else{
+            return $response->withRedirect('/oauth2callback'); 
+        }
+    }
+
     // Routes
     $app->get('/', function (Request $request, Response $response, $args) {
         return $this->renderer->render($response, 'index.html', $args);
     });
 
-    $app->get('/oauth2callback', function (Request $request, Response $response, $args) {
+    $app->get('/oauth2callback', function (Request $request, $response, $args) {
         session_start();
+        $config = require dirname(__FILE__, 2) . '/config.php';
 
         $client = new Google_Client();
-        $client->setAuthConfig($conifg->credentialsFile);
+        $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
         $client->addScope(openid);
 
@@ -24,17 +46,7 @@
         }
     });
 
-    $app->get('/dashboard', function($req, $response, $args){
-        session_start();
-        
-        $client = new Google_Client();
-        $client->setAuthConfig($conifg->credentialsFile);
-
-        if(isset($_SESSION['access_token']) && $_SESSION['access_token']){
-            $client->setAccessToken($_SESSION['access_token']);
-            return $this->view->render($response, 'dashboard.twig');
-        } else{
-            return $response->withRedirect('/oauth2callback'); 
-        }
+    $app->get('/dashboard', function(Request $request, Response $response, $args){
+        authCheck('dashboard.twig', $this, $request, $response, $args);
     });
 ?>

@@ -44,6 +44,20 @@
     });
 
     //api calls
+
+    $app->post('/upload', function ($request, $response, $args) {
+        $files = $request->getUploadedFiles();
+        if (empty($files['newfile'])) {
+            throw new Exception('Expected a newfile');
+        }
+    
+        $newfile = $files['newfile'];
+        if ($newfile->getError() === UPLOAD_ERR_OK) {
+            $uploadFileName = $newfile->getClientFilename();
+            $newfile->moveTo("../public_html/img/$uploadFileName");
+        }
+    });
+
     $app->get('/api/collection/', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();

@@ -21,7 +21,7 @@
 
     require 'dbconnection.php';
     require 'dependencies.php';
-    require 'routes.php';
+    require './routes/routes.php';
 
     $app->run();
 ?>

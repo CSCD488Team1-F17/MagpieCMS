@@ -10,9 +10,8 @@
     $app->get('/oauth2callback', function (Request $request, Response $response, $args) {
         session_start();
 
-        $credentialsFile = 'D:/Documents/_GitProjects/magpie-cms/app/src/client_secrets.json';
         $client = new Google_Client();
-        $client->setAuthConfig($credentialsFile);
+        $client->setAuthConfig($conifg->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
         $client->addScope(openid);
 
@@ -30,10 +29,9 @@
 
     $app->get('/dashboard', function($req, $response, $args){
         session_start();
-
-        $credentialsFile = 'D:/Documents/_GitProjects/magpie-cms/app/src/client_secrets.json';
+        
         $client = new Google_Client();
-        $client->setAuthConfig($credentialsFile);
+        $client->setAuthConfig($conifg->credentialsFile);
 
         if(isset($_SESSION['access_token']) && $_SESSION['access_token']){
             $client->setAccessToken($_SESSION['access_token']);

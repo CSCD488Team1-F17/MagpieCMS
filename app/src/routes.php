@@ -7,17 +7,43 @@
         return $this->renderer->render($response, 'index.html', $args);
     });
 
-    $app->get('/login', function (Request $request, Response $response, $args) {
-        return $this->renderer->render($response, 'login.html', $args);
+    $app->get('/oauth2callback', function (Request $request, Response $response, $args) {
+        session_start();
+
+        $credentialsFile = 'D:/Documents/_GitProjects/magpie-cms/app/src/client_secrets.json';
+        $client = new Google_Client();
+        $client->setAuthConfig($credentialsFile);
+        $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
+        $client->addScope(openid);
+
+        $allGetVars = $request->getQueryParams();
+        if (!array_key_exists('code', $allGetVars)) {
+            $auth_url = $client->createAuthUrl();
+            return $response->withRedirect($auth_url); 
+        } else {
+            $getCode = $allGetVars['code'];
+            $client->authenticate($getCode);
+            $_SESSION['access_token'] = $client->getAccessToken();
+            return $response->withRedirect('/'); 
+        }
     });
 
-    $app->get('/login-success', function (Request $request, Response $response, $args) {
-        echo "success!";
+    $app->get('/dashboard', function($req, $response, $args){
+        session_start();
+
+        $credentialsFile = 'D:/Documents/_GitProjects/magpie-cms/app/src/client_secrets.json';
+        $client = new Google_Client();
+        $client->setAuthConfig($credentialsFile);
+
+        if(isset($_SESSION['access_token']) && $_SESSION['access_token']){
+            $client->setAccessToken($_SESSION['access_token']);
+            return $this->view->render($response, 'dashboard.twig');
+        } else{
+            return $response->withRedirect('/oauth2callback'); 
+        }
     });
 
-    $app->get('/test', function($req, $res, $args){
-        return $this->view->render($res, 'create.twig');
-    });
+    //api calls
 
     $app->post('/upload', function ($request, $response, $args) {
         $files = $request->getUploadedFiles();
@@ -110,4 +136,12 @@
 		$stmt->execute([$cid, $isActive, $name, $city, $state, $rating, $description, $numberOfLandmarks, $collectionLength, $isOrder, $picID]);
 		$conn = null;
 	});
+
+    // $app->post('/database/user', function(Request $request){
+    //     $params = $request->getParsedBody();
+
+    //     $id_token = $params['id_token'];
+
+        
+	// });
 ?>

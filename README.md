@@ -36,4 +36,4 @@ In Apache config, modify ```httpd.conf``` and ```httpd-ssl.conf``` and change al
 
 Also in Apache config, open ```php.ini``` and underneath ```php.ini Options``` write ```curl.cainfo = "C:\xampp\php\extras\ssl\cacert.pem"```
 
-Lastly, you need to download the ```client_secret.json``` file for the Google API Credentials. As of now, we do not have a good method of sharing this. So for now, please email one of the members to download the file.
+Lastly, you need to download the ```client_secret.json``` file for the Google API Credentials. As of now, we do not have a good method of sharing this. So for now, please email one of the members to download the file. Once downloaded, place it somwhere secure and modify ```credentialsFile``` in ```config.php``` to point to it.

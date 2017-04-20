@@ -58,22 +58,22 @@ function onSignIn(googleUser){
         success: function (ret) {
             //TODO: Do backend stuff here.
 
-            window.location.href = url + "/dashboard";
-
-            // var profile = googleUser.getBasicProfile();
-
-            // var name = profile.getName();
-            // var icon = profile.getImageUrl();
-
-            // var content = '' +
-            // '<h1>Hello ' + name + '</h1>' +
-            // '<img src="' + icon + '">' +
-            // '';
-
-            // $("#userInfo").html(content);
+            window.location.href = url + "/collections";
         },
         error: function (err){
             console.log("Error logging in.");
         }
+    });
+}
+
+function onSignOut(){
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+        var pathArray = location.href.split( '/' );
+        var protocol = pathArray[0];
+        var host = pathArray[2];
+        var url = protocol + '//' + host;
+        window.location.href = url;
     });
 }

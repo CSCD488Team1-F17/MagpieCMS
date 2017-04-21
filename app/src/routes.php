@@ -90,16 +90,45 @@
 		$picID = (int)$request->getParsedBodyParam("PicID", $default = 0);
 		
 		$conn = connect_db();	
-		$stmt = $conn->prepare("INSERT INTO collections (IsActive, Name, City, State, Rating, Description, NumberOfLandMarks, CollectionLength, IsOrder, PicID)
+		$stmt = $conn->prepare("INSERT INTO Collections (IsActive, Name, City, State, Rating, Description, NumberOfLandMarks, CollectionLength, IsOrder, PicID)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->execute([$isActive, $name, $city, $state, $rating, $description, $numberOfLandmarks, $collectionLength, $isOrder, $picID]);
+		$conn = null;
+	});
+	
+	$app->post('/database/landmark', function(Request $request) {
+		$name = $request->getParsedBodyParam("Name", $default = null);
+		$long = (double)$request->getParsedBodyParam("Longitude", $default = 0);
+		$lat = (double)$request->getParsedBodyParam("Latitude", $default = 0);
+		$descID = (int)$request->getParsedBodyParam("DescID", $default = 0);
+		$QRCode = $request->getParsedBodyParam("QRCode", $default = "{ Empty }");
+		$picID = (int)$request->getParsedBodyParam("PicID", $default = 0);
+		$cid = (int)$request->getParsedBodyParam("CID", $default = 0);
+		$description = $request->getParsedBodyParam("Description", $default = "{ Empty }");
+		
+		$conn = connect_db();
+		$stmt = $conn->prepare("INSERT INTO landmarks (Name, Longitude, Latitude, DescID, QRCode, PicID) VALUES (?, ?, ?, ?, ?, ?)");
+		$stmt->execute([$name, $long, $lat, $descID, $QRCode, $picID]);
+		
+		$stmt = $conn->prepare("Select LID FROM Landmarks WHERE Landmarks.Name = ?");
+		$stmt->execute([$name]);
+		$result = $stmt->fetch();
+		$lid = $result['LID'];
+		
+		echo $lid;
+		$stmt = $conn->prepare("INSERT INTO CollectionLandmarks (CollectionID, LandmarkID) VALUES (?, ?)");
+		$stmt->execute([$cid, $lid]);
+		
+		$stmt = $conn->prepare("INSERT INTO LandmarkDescription (DesID, LID, CID, Description) VALUES (?, ?, ?, ?)");
+		$stmt->execute([$descID, $lid, $cid, $description]);
+		
 		$conn = null;
 	});
 	
 	$app->get('/qrcode/{cid}', function (Request $request, Response $response){
 		$conn = connect_db();
         $cid = (int)$request->getAttribute('cid');
-        $stmt = $conn->prepare("SELECT Name FROM collections WHERE Collections.CID = ?;");
+        $stmt = $conn->prepare("SELECT Name FROM Collections WHERE Collections.CID = ?;");
         $stmt->execute([$cid]);
         $result = $stmt->fetch();
 		$path = '../Resources/QRcodes/'.$cid.'.png';

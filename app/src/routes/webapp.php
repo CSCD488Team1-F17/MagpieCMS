@@ -52,22 +52,22 @@
     });
 
     $app->get('/collections', function(Request $request, Response $response, $args){
-        authCheck('collections.twig', $this, $request, $response, $args);
+        return authCheck('collections.twig', $this, $request, $response, $args);
     });
 
     $app->get('/create', function(Request $request, Response $response, $args){
-        authCheck('create.twig', $this, $request, $response, $args);
+        return authCheck('create.twig', $this, $request, $response, $args);
     });
     
     $app->get('/contact', function(Request $request, Response $response, $args){
-        authCheck('contact.twig', $this, $request, $response, $args);
+        return authCheck('contact.twig', $this, $request, $response, $args);
     });
     
     $app->get('/legal', function(Request $request, Response $response, $args){
-        authCheck('legal.twig', $this, $request, $response, $args);
+        return authCheck('legal.twig', $this, $request, $response, $args);
     });
 
     $app->get('/account', function(Request $request, Response $response, $args){
-        authCheck('account.twig', $this, $request, $response, $args);
+        return authCheck('account.twig', $this, $request, $response, $args);
     });
 ?>

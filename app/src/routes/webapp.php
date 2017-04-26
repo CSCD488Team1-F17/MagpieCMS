@@ -56,7 +56,16 @@
     });
 
     $app->get('/create', function(Request $request, Response $response, $args){
-        authCheck('create.twig', $this, $request, $response, $args);
+        //authCheck('create.twig', $this, $request, $response, $args);
+        $cid;
+        $conn = connect_db();
+        $output = $conn->query("SELECT MAX(CID) AS MaxCid FROM Collections;");
+        while($row = $output->fetch()) {
+            $cid = $row['MaxCid'];
+        }
+        $conn = null;
+
+        return $this->view->render($response, 'create.twig', ['cid'=> $cid]);
     });
     
     $app->get('/contact', function(Request $request, Response $response, $args){
@@ -69,5 +78,9 @@
 
     $app->get('/account', function(Request $request, Response $response, $args){
         authCheck('account.twig', $this, $request, $response, $args);
+    });
+
+    $app->get('/landmarks/{cid}', function(Request $request, Response $response, $args){
+        return $this->view->render($response, 'landmarks.twig', ['cid' => (int)$request->getAttribute('cid')]);
     });
 ?>

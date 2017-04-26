@@ -76,30 +76,51 @@
 	
 	
 	$app->post('/database/collection', function(Request $request){
-		$cid = (int)$request->getParsedBodyParam("CID", $default = null);
-		$isActive = (int)$request->getParsedBodyParam("IsActive", $default = null);
-		$name = $request->getParsedBodyParam("Name", $default = null);
-		$city = $request->getParsedBodyParam("City", $default = null);
-		$state = $request->getParsedBodyParam("State", $default = null);
-		$rating = $request->getParsedBodyParam("Rating", $default = null);
-		$description = $request->getParsedBodyParam("Description", $default = null);
-		$numberOfLandmarks = (int)$request->getParsedBodyParam("NumberOfLandMarks", $default = null);
-		$collectionLength = (double)$request->getParsedBodyParam("CollectionLength", $default = null);
-		$isOrder = (int)$request->getParsedBodyParam("IsOrder", $default = null);
-		$picID = (int)$request->getParsedBodyParam("PicID", $default = null);
+		$cid =(int)$request->getParam("cid") + 1;
+		$name = $request->getParam("name");
+		$description = $request->getParam("summary");
+		$numberOfLandmarks = (int)$request->getParam("numBadge");
+        $isOrdered = (int)$request->getParam("ordered");
+		//$picID = (int)superbadgeUpload($request);
 		
 		$conn = connect_db();	
-		$stmt = $conn->prepare("INSERT INTO collections (CID, IsActive, Name, City, State, Rating, Description, NumberOfLandMarks, CollectionLength, IsOrder, PicID)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->execute([$cid, $isActive, $name, $city, $state, $rating, $description, $numberOfLandmarks, $collectionLength, $isOrder, $picID]);
-		$conn = null;
+		$stmt = $conn->prepare("INSERT INTO Collections (Name, Description, NumberOfLandMarks, IsOrder) VALUES (?, ?, ?, ?)");
+		$stmt->execute([$name, $description, $numberOfLandmarks, $isOrdered]);
+
+        $picID = (int)superbadgeUpload($request);
+        $stmt = $conn->prepare("UPDATE Collections SET PicID = ? WHERE CID = ?");
+        $stmt->execute([$picID, $cid]);
+        echo("success");
 	});
 
     // $app->post('/database/user', function(Request $request){
     //     $params = $request->getParsedBody();
-
-    //     $id_token = $params['id_token'];
-
-        
+    //     $id_token = $params['id_token']; 
 	// });
+
+    function superbadgeUpload($request){
+        $files = $request->getUploadedFiles();
+        $cid = (int)$request->getParam("cid") + 1;
+        $pid;
+        if (empty($files['newfile'])) {
+            throw new Exception('Expected a newfile');
+        }
+    
+        $newfile = $files['newfile'];
+        if ($newfile->getError() === UPLOAD_ERR_OK) {
+            $uploadFileName = $newfile->getClientFilename();
+            $newfile->moveTo("../public_html/img/$uploadFileName");
+        }
+
+        $conn = connect_db();
+        $stmt = $conn->prepare("INSERT INTO CollectionImages (CID, FileLocation) VALUES (?,?)");
+        $stmt->execute([$cid, $uploadFileName]);
+        $output = $conn->query("SELECT MAX(PicID) AS MaxPid FROM CollectionImages;");
+        while($row = $output->fetch()) {
+            $pid = $row['MaxPid'];
+        }
+        $conn = null;
+
+        return $pid;
+    }
 ?>

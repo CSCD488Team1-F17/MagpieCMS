@@ -16,7 +16,7 @@
         if(isset($_SESSION['access_token']) && $_SESSION['access_token']){
             error_log(print_r("access_token SET", TRUE)); 
             $client->setAccessToken($_SESSION['access_token']);
-            return $app->view->render($response, $path);
+            return $app->view->render($response, $path, $args);
         } else{
             error_log(print_r("access_token NOT SET", TRUE)); 
             error_log(print_r($response, TRUE)); 
@@ -56,7 +56,15 @@
     });
 
     $app->get('/create', function(Request $request, Response $response, $args){
-        return authCheck('create.twig', $this, $request, $response, $args);
+        $cid;
+        $conn = connect_db();
+        $output = $conn->query("SELECT MAX(CID) AS MaxCid FROM Collections;");
+        while($row = $output->fetch()) {
+            $cid = $row['MaxCid'];
+        }
+        $conn = null;
+
+        return authCheck('create.twig', $this, $request, $response, ['cid'=> $cid]);
     });
     
     $app->get('/contact', function(Request $request, Response $response, $args){
@@ -69,5 +77,9 @@
 
     $app->get('/account', function(Request $request, Response $response, $args){
         return authCheck('account.twig', $this, $request, $response, $args);
+    });
+
+    $app->get('/landmarks/{cid}', function(Request $request, Response $response, $args){
+        return authCheck('landmarks.twig', $this, $request, $response, ['cid' => (int)$request->getAttribute('cid')]);
     });
 ?>

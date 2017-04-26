@@ -16,7 +16,7 @@
         if(isset($_SESSION['access_token']) && $_SESSION['access_token']){
             error_log(print_r("access_token SET", TRUE)); 
             $client->setAccessToken($_SESSION['access_token']);
-            return $app->view->render($response, $path);
+            return $app->view->render($response, $path, $args);
         } else{
             error_log(print_r("access_token NOT SET", TRUE)); 
             error_log(print_r($response, TRUE)); 
@@ -52,11 +52,10 @@
     });
 
     $app->get('/collections', function(Request $request, Response $response, $args){
-        authCheck('collections.twig', $this, $request, $response, $args);
+        return authCheck('collections.twig', $this, $request, $response, $args);
     });
 
     $app->get('/create', function(Request $request, Response $response, $args){
-        //authCheck('create.twig', $this, $request, $response, $args);
         $cid;
         $conn = connect_db();
         $output = $conn->query("SELECT MAX(CID) AS MaxCid FROM Collections;");
@@ -65,22 +64,22 @@
         }
         $conn = null;
 
-        return $this->view->render($response, 'create.twig', ['cid'=> $cid]);
+        return authCheck('create.twig', $this, $request, $response, ['cid'=> $cid]);
     });
     
     $app->get('/contact', function(Request $request, Response $response, $args){
-        authCheck('contact.twig', $this, $request, $response, $args);
+        return authCheck('contact.twig', $this, $request, $response, $args);
     });
     
     $app->get('/legal', function(Request $request, Response $response, $args){
-        authCheck('legal.twig', $this, $request, $response, $args);
+        return authCheck('legal.twig', $this, $request, $response, $args);
     });
 
     $app->get('/account', function(Request $request, Response $response, $args){
-        authCheck('account.twig', $this, $request, $response, $args);
+        return authCheck('account.twig', $this, $request, $response, $args);
     });
 
     $app->get('/landmarks/{cid}', function(Request $request, Response $response, $args){
-        return $this->view->render($response, 'landmarks.twig', ['cid' => (int)$request->getAttribute('cid')]);
+        return authCheck('landmarks.twig', $this, $request, $response, ['cid' => (int)$request->getAttribute('cid')]);
     });
 ?>

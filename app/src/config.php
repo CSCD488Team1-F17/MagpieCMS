@@ -5,7 +5,7 @@
         'username' => 'magpiehu_admin',
         'password' => '',
         'database' => 'magpiehu_cmsdb',
-        'credentialsFile' => 'C:\Users\szaugg\Documents\_Workspaces\_Git Projects\magpie-cms\app\src\client_secret.json',
+        'credentialsFile' => dirname(__FILE__, 1) . '/client_secrets.json',
         
     );
 

@@ -1,6 +1,18 @@
 <?php
     use \Psr\Http\Message\ServerRequestInterface as Request;
     use \Psr\Http\Message\ResponseInterface as Response;
+
+    $config = require dirname(__FILE__, 2) . '/config.php';
+
+    // Helper functions
+    function connect_db(){
+        $config = require dirname(__FILE__, 2) . '/config.php';
+        $connection = new PDO("mysql:host=$config->server;dbname=$config->database" ,$config->username, $config->password);
+        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        return $connection;
+    }
+
     //api calls
 
     $app->post('/upload', function ($request, $response, $args) {

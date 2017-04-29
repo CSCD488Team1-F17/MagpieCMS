@@ -31,7 +31,7 @@
     $app->get('/api/collection/', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();
-	    $output = $conn->query("SELECT * FROM Collections;");
+	    $output = $conn->query("SELECT * FROM Collections WHERE STATUS = 1;");
         while($row = $output->fetch()) {
             array_push($ara, $row);
         }

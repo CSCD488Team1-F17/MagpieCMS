@@ -51,6 +51,34 @@
         }
     });
 
+    $app->post('/tokensignin', function (Request $request, $response, $args) {
+        error_log(print_r("in oauth2callback", TRUE)); 
+        //session_start();
+        $config = require dirname(__FILE__, 2) . '/config.php';
+
+        $client = new Google_Client();
+        $client->setAuthConfig($config->credentialsFile);
+        $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
+        $client->addScope(openid);
+
+        $json = $request->getBody();
+        $data = json_decode($json, true);
+
+        $id_token = $data['id_token'];
+
+        $payload = $client->verifyIdToken($id_token);
+        if ($payload) {
+            $userid = $payload['sub'];
+            // $conn = connect_db();
+            // $stmt = $conn->prepare("INSERT INTO WebUserData (UserID) VALUES (?)");
+            // $stmt->execute([$userid]);
+            // $conn = null;
+            return $response->withStatus(200);
+        } else {
+            return $response->withStatus(300);
+        }
+    });
+
     $app->get('/collections', function(Request $request, Response $response, $args){
         return authCheck('collections.twig', $this, $request, $response, $args);
     });

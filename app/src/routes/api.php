@@ -135,4 +135,37 @@
 
         return $pid;
     }
+	
+	$app->get('/images/collection/{cid}', function (Request $request, Response $response){
+        $conn = connect_db();
+		$cid = (int)$request->getAttribute('cid');
+		$fileName = "Collection".$cid."Images.zip";
+		
+		//Folder name for collection images assumed to be just the CID
+		$rootPath = realpath("../Resources/Images/$cid");
+		$zip = new ZipArchive();
+		if ($zip->open($fileName, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE) !== TRUE) {
+			die ("An error occurred creating your ZIP file.");
+		}
+		
+		$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath), 
+		RecursiveIteratorIterator::LEAVES_ONLY);
+		
+		foreach($files as $name => $file)
+		{
+			if(!$file->isDir())
+			{
+					$filePath = $file->getRealPath();
+					$relativePath = substr($filePath, strlen($rootPath) + 1);
+					$zip->addFile($filePath, 'Images/'.$relativePath);
+			}	
+		}
+		$zip->close();
+		readFile($fileName);
+		unlink($fileName);
+		$conn = null;
+		return $response->withHeader("Content-Type", "application/zip")
+		->withHeader("Content-Disposition", "attachment; filename=$fileName")
+		->withHeader("Cache-Control", "no-store,no-cache");
+    });
 ?>

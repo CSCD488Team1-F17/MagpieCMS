@@ -74,7 +74,6 @@
             $stmt = $conn->prepare("SELECT UID FROM WebUserData WHERE UID = ?;");
             $stmt->execute([$userid]);
             $output = $stmt->fetch();
-            error_log(print_r($output['UID'], TRUE)); 
             if($output['UID'] != $userid){
                 $stmt = $conn->prepare("INSERT INTO WebUserData (UID) VALUES (?)");
                 $stmt->execute([$userid]);

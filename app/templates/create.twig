@@ -85,6 +85,12 @@
                 formData.append("summary", summary);
                 formData.append("numBadge", numBadge);
                 formData.append("ordered", ordered);
+
+                var GoogleUser = GoogleAuth.currentUser.get();
+                var id_token = GoogleUser.getAuthResponse().id_token;
+
+                formData.append("idToken", id_token);
+
                 $.ajax({
                     url:'/database/collection',
                     type:'post',

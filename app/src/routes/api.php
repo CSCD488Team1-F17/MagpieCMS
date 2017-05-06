@@ -93,7 +93,11 @@
 		$description = $request->getParam("summary");
 		$numberOfLandmarks = (int)$request->getParam("numBadge");
         $isOrdered = (int)$request->getParam("ordered");
+        $idToken = $request->getParam("idToken");
 		//$picID = (int)superbadgeUpload($request);
+
+        error_log(print_r($idToken, TRUE));
+        
 		
 		$conn = connect_db();	
 		$stmt = $conn->prepare("INSERT INTO Collections (Name, Description, NumberOfLandMarks, IsOrder) VALUES (?, ?, ?, ?)");
@@ -102,6 +106,35 @@
         $picID = (int)superbadgeUpload($request);
         $stmt = $conn->prepare("UPDATE Collections SET PicID = ? WHERE CID = ?");
         $stmt->execute([$picID, $cid]);
+
+        $conn = null;
+
+        $config = require dirname(__FILE__, 2) . '/config.php';
+
+        $client = new Google_Client();
+        $client->setAuthConfig($config->credentialsFile);
+        $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
+        $client->addScope(openid);
+
+        $payload = $client->verifyIdToken($idToken);
+        if ($payload) {
+            $userid = $payload['sub'];
+            $conn = connect_db();
+
+            $stmt = $conn->prepare("SELECT * FROM WebUserData WHERE UID = ?;");
+            $stmt->execute([$userid]);
+            $output = $stmt->fetch();
+            error_log(print_r($output['UserID'], TRUE));
+            if($output['UID'] == $userid){
+                $stmt = $conn->prepare("INSERT INTO UserMadeCollectionList (UserID, CollectionID) VALUES (?, ?);");
+                $stmt->execute([$output['UserID'], $cid]);
+            }
+
+            $conn = null;
+        } else {
+            return $response->withStatus(300);
+        }
+
         echo("success");
 	});
 

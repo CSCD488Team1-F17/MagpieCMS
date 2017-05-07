@@ -22,9 +22,10 @@
         }
     
         $newfile = $files['newfile'];
+		$cid = $request->getParam('CID');
         if ($newfile->getError() === UPLOAD_ERR_OK) {
             $uploadFileName = $newfile->getClientFilename();
-            $newfile->moveTo("../public_html/img/$uploadFileName");
+            $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
         }
     });
 
@@ -121,7 +122,7 @@
         $newfile = $files['newfile'];
         if ($newfile->getError() === UPLOAD_ERR_OK) {
             $uploadFileName = $newfile->getClientFilename();
-            $newfile->moveTo("../public_html/img/$uploadFileName");
+            $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
         }
 
         $conn = connect_db();

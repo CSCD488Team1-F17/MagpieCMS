@@ -73,8 +73,8 @@
         $conn = null;
     });
 
-    $app->post('/api/user', function (Request $request, Response $response){
-        $idToken = $request->getParam("idToken");
+    $app->post('/api/user/app', function (Request $request, Response $response){
+        $id_token = $request->getParam("id_token");
         error_log(print_r($idToken, TRUE));
 
         $config = require dirname(__FILE__, 2) . '/config.php';
@@ -84,7 +84,7 @@
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
         $client->addScope(openid);
 
-        $payload = $client->verifyIdToken($idToken);
+        $payload = $client->verifyIdToken($id_token);
         if ($payload) {
             $userid = $payload['sub'];
 
@@ -106,6 +106,57 @@
         
         $conn = null;
         return $response->withStatus(200);
+    });
+
+    $app->post('/api/user/web', function (Request $request, Response $response){
+        $json = $request->getBody();
+        $data = json_decode($json, true);
+
+        $id_token = $data['id_token'];
+        error_log(print_r($id_token, TRUE));
+
+        $config = require dirname(__FILE__, 2) . '/config.php';
+
+        $client = new Google_Client();
+        $client->setAuthConfig($config->credentialsFile);
+        $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
+        $client->addScope(openid);
+
+        $payload = $client->verifyIdToken($id_token);
+        if ($payload) {
+            $userid = $payload['sub'];
+
+            $conn = connect_db();
+
+            $stmt = $conn->prepare("SELECT * FROM WebUserData WHERE UID = ?;");
+            $stmt->execute([$userid]);
+            $output = $stmt->fetch();
+
+            if($output['UID'] == $userid){
+                $conn = null;
+                return $response->withJson($output);
+            } else{
+                return $response->withStatus(300);
+            }
+        } else {
+            return $response->withStatus(300);
+        }
+    });
+
+    $app->post('/api/user/web/collections', function (Request $request, Response $response){
+        $userID = $request->getParam("userID");
+        $conn = connect_db();
+
+        $stmt = $conn->prepare("SELECT * FROM WebUserData WHERE UID = ?;");
+        $stmt->execute([$userid]);
+        $output = $stmt->fetch();
+
+        if($output['UID'] == $userid){
+            $conn = null;
+            return $response->withJson($output);
+        } else{
+            return $response->withStatus(300);
+        }
     });
 
     $app->get('/image/logo/{wid}', function (Request $request, Response $response){

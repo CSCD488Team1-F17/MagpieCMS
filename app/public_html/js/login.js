@@ -27,7 +27,9 @@ function initClient() {
 
 function onInit() {
     if (GoogleAuth.isSignedIn.get()) {
-
+        if(window.location.pathname === "/collections"){
+            collectionsInit();
+        }
     } else {
         window.location.href = url;
     }

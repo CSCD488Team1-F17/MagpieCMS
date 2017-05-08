@@ -29,6 +29,45 @@
         }
     });
 
+	$app->post('/upload/images/collection', function ($request, $response, $args) {
+        $files = $request->getUploadedFiles();
+        if (empty($files['newfile'])) {
+            throw new Exception('Expected a newfile');
+        }
+		
+        $newfile = $files['newfile'];
+		$cid = $request->getParam('CID');
+        if ($newfile->getError() === UPLOAD_ERR_OK) {
+            $uploadFileName = $newfile->getClientFilename();
+            $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
+        }
+		$imageType = substr($uploadFileName, strpos($uploadFileName, ".")+1);
+		$conn = connect_db();
+		$stmt = $conn->prepare("INSERT INTO CollectionImages (CID, FileLocation, ImageType) Values (?, ?, ?)");
+		$stmt->execute([$cid, $uploadFileName, $imageType]);
+		$conn = null;
+    });
+
+	$app->post('/upload/images/landmark', function ($request, $response, $args) {
+        $files = $request->getUploadedFiles();
+        if (empty($files['newfile'])) {
+            throw new Exception('Expected a newfile');
+        }
+		
+        $newfile = $files['newfile'];
+		$lid = $request->getParam('LID');
+		$cid = $request->getParam('CID');
+        if ($newfile->getError() === UPLOAD_ERR_OK) {
+            $uploadFileName = $newfile->getClientFilename();
+            $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");//unsure here
+        }
+		$imageType = substr($uploadFileName, strpos($uploadFileName, ".")+1);
+		$conn = connect_db();
+		$stmt = $conn->prepare("INSERT INTO LandmarkImages (CID, FileLocation, ImageType) Values (?, ?, ?)");
+		$stmt->execute([$cid, $uploadFileName, $imageType]);
+		$conn = null;
+    });
+	
     $app->get('/api/collection/', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();

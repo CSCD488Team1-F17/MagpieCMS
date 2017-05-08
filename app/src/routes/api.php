@@ -73,6 +73,41 @@
         $conn = null;
     });
 
+    $app->post('/api/user', function (Request $request, Response $response){
+        $idToken = $request->getParam("idToken");
+        error_log(print_r($idToken, TRUE));
+
+        $config = require dirname(__FILE__, 2) . '/config.php';
+
+        $client = new Google_Client();
+        $client->setAuthConfig($config->credentialsFile);
+        $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
+        $client->addScope(openid);
+
+        $payload = $client->verifyIdToken($idToken);
+        if ($payload) {
+            $userid = $payload['sub'];
+
+            $conn = connect_db();
+
+            $stmt = $conn->prepare("SELECT * FROM AppUserData WHERE UID = ?;");
+            $stmt->execute([$userid]);
+            $output = $stmt->fetch();
+
+            if($output['UID'] != $userid){
+                $stmt = $conn->prepare("INSERT INTO AppUserData (UID) VALUES (?)");
+                $stmt->execute([$userid]);
+            } else{
+                echo "found em!";
+            }
+        } else {
+            return $response->withStatus(300);
+        }
+        
+        $conn = null;
+        return $response->withStatus(200);
+    });
+
     $app->get('/image/logo/{wid}', function (Request $request, Response $response){
         //$imgName = (string)$request->getAttribute('imageid');
         $conn = connect_db();

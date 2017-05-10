@@ -1,0 +1,15 @@
+Walks(WID integer (Primary Key), Name string, Full Location string, NumberOfLandMarks integer, WalkLength double, IsOrder boolean, WalkPreview integer (Foreign Key), PicID integer (Foreign Key))
+
+LandMarks(LID integer (Primary Key), Name string, Longitude double, Latitude double, NumberOfWalks integer, Description (Foreign Key), QRCodeID (Foreign Key), PicID integer (Foreign Key))
+
+WalkLandMarks(WalkID integer, LandMarkID integer, Primary Keys (WalkID, LandMarkID))
+
+WalkImages(PicID integer (Primary Key), WID integer (Foreign Key), fileLocation string)
+
+LandMarkImages(PicID integer (Primary Key), LID integer (Foreign Key), fileLocation string)
+
+WalkDescription(DesID integer (Primary Key), WID integer (Foreign Key), Description string)
+
+QRCodes(QRCID integer (Primary Key), LID integer (Foreign Key), RawCode string)
+
+LandMarkDescription(DesID integer (Primary Key), LID integer (Foreign Key), WID integer (Foreign Key), Description string)

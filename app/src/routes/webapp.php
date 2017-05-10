@@ -28,6 +28,9 @@
     $app->get('/', function (Request $request, Response $response, $args) {
         return $this->renderer->render($response, 'index.html', $args);
     });
+    $app->get('/login', function (Request $request, Response $response, $args) {
+        return $this->renderer->render($response, 'login.html', $args);
+    });
 
     $app->get('/oauth2callback', function (Request $request, $response, $args) {
         error_log(print_r("in oauth2callback", TRUE)); 

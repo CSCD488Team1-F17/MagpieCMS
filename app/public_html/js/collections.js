@@ -1,14 +1,34 @@
 function collectionsInit(){
-    user = getUser();
-    if(user != null && user.UserID != null){
-        // collections = getCollections(user.UserID);
-        // if(collections != null){
+    getUser();
+}
 
-        // }
-        console.log(user);
+function displayCollections(collections){
+    var html = '';
+    if(collections != null){
+        html = '' +
+            '<table class="table table-striped">' +
+                '<thead>' +
+                    '<tr>' +
+                        '<th>Name</th>' +
+                        '<th>Description</th>' +
+                    '</tr>' +
+                '</thead>' +
+                '<tbody>';
+        for(var i = 0; i < collections.length; i++){
+            html += '<tr>' +
+                    '<td>' + collections[i].Name + '</td>' +
+                    '<td>' + collections[i].Description + '</td>' +
+                '</tr>';
+        }
+
+        html += '</tbody>' +
+            '</table>';
     } else {
-        //The user doesnt exist?!?!
+        html = '<p>No collections yet.</p>'
     }
+
+    console.log(html);
+    $('#collections').html(html);
 }
 
 function getUser(){
@@ -24,7 +44,11 @@ function getUser(){
         url: '/api/user/web',
         data: json,
         success: function (ret) {
-            return ret;
+            if(ret != null){
+                getCollections(ret.UserID);
+            } else {
+                //The user doesnt exist?!?!
+            }
         },
         error: function (err) {
             console.log("Error getting user.");
@@ -42,7 +66,7 @@ function getCollections(userID){
         url: '/api/user/web/collections',
         data: json,
         success: function (ret) {
-            return JSON.parse(ret);
+                displayCollections(ret);
         },
         error: function (err) {
             console.log("Error getting collections.");

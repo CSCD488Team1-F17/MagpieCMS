@@ -144,19 +144,26 @@
     });
 
     $app->post('/api/user/web/collections', function (Request $request, Response $response){
-        $userID = $request->getParam("userID");
+        $json = $request->getBody();
+        $data = json_decode($json, true);
+
+        $userID = $data['UserID'];
+        error_log(print_r($userID, TRUE));
         $conn = connect_db();
 
-        $stmt = $conn->prepare("SELECT * FROM WebUserData WHERE UID = ?;");
-        $stmt->execute([$userid]);
-        $output = $stmt->fetch();
-
-        if($output['UID'] == $userid){
-            $conn = null;
-            return $response->withJson($output);
-        } else{
-            return $response->withStatus(300);
+        $stmt = $conn->prepare("SELECT CollectionID FROM UserMadeCollectionList WHERE UserID = ?;");
+        $stmt->execute([$userID]);
+        
+        $result = array();
+        while($row = $stmt->fetch()) {
+            $cid = $row['CollectionID'];
+            $stmt2 = $conn->prepare("SELECT * FROM Collections WHERE CID = ?;");
+            $stmt2->execute([$cid]);
+            $output = $stmt2->fetch();
+            array_push($result, $output);
         }
+
+        return $response->withJson($result);
     });
 
     $app->get('/image/logo/{wid}', function (Request $request, Response $response){

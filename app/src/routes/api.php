@@ -20,7 +20,7 @@
         if (empty($files['newfile'])) {
             throw new Exception('Expected a newfile');
         }
-    
+		
         $newfile = $files['newfile'];
 		$cid = $request->getParam('CID');
         if ($newfile->getError() === UPLOAD_ERR_OK) {
@@ -28,7 +28,7 @@
             $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
         }
     });
-
+	
 	$app->post('/upload/images/collection', function ($request, $response, $args) {
         $files = $request->getUploadedFiles();
         if (empty($files['newfile'])) {
@@ -136,13 +136,27 @@
 		//$picID = (int)superbadgeUpload($request);
 		
 		$conn = connect_db();	
-		$stmt = $conn->prepare("INSERT INTO Collections (Name, Description, NumberOfLandMarks, IsOrder) VALUES (?, ?, ?, ?)");
+		$stmt = $conn->prepare("INSERT INTO Collections (Name, Description, NumberOfLandmarks, IsOrder) VALUES (?, ?, ?, ?)");
 		$stmt->execute([$name, $description, $numberOfLandmarks, $isOrdered]);
 
         $picID = (int)superbadgeUpload($request);
         $stmt = $conn->prepare("UPDATE Collections SET PicID = ? WHERE CID = ?");
         $stmt->execute([$picID, $cid]);
         echo("success");
+	});
+	
+	$app->post('/edit/collection', function(Request $request){
+		$cid =(int)$request->getParam("cid");
+		$name = $request->getParam("name");
+		$abbreviation = $request->getParam("abbreviation");
+		$description = $request->getParam("summary");
+		$numberOfLandmarks = (int)$request->getParam("numBadge");
+        $isOrder = (int)$request->getParam("ordered");
+		//$picID
+		
+		$conn = connect_db();	
+		$stmt = $conn->prepare("UPDATE Collections SET Name = ?, Abbreviation = ?, Description = ?, NumberOfLandmarks = ?, IsOrder = ? WHERE CID = ?");
+		$stmt->execute([$name, $abbreviation, $description, $numberOfLandmarks, $isOrder, $cid]);
 	});
 
     // $app->post('/database/user', function(Request $request){

@@ -82,4 +82,20 @@
     $app->get('/landmarks/{cid}', function(Request $request, Response $response, $args){
         return authCheck('landmarks.twig', $this, $request, $response, ['cid' => (int)$request->getAttribute('cid')]);
     });
+	
+	$app->get('/edit/{cid}', function(Request $request, Response $response, $args){
+		$cid = (int)$request->getAttribute('cid');
+		$conn = connect_db();
+		$stmt = $conn->prepare("SELECT * FROM Collections WHERE CID = ?;");
+		$stmt->execute([$cid]);
+		$result = $stmt->fetch();
+		$name = $result['Name'];
+		$abbreviation = $result['Abbreviation'];
+		$description = $result['Description'];
+		$numberOfLandmarks = $result['NumberOfLandmarks'];
+		$isOrder = $result['IsOrder'];
+		
+		return authCheck('edit.twig', $this, $request, $response, ['cid'=>$cid, 'name'=>$name, 'abbreviation'=>$abbreviation, 'description'=>$description, 
+		'numberOfLandmarks'=>$numberOfLandmarks, 'isOrder'=>$isOrder]);
+	});	
 ?>

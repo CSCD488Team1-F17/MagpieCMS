@@ -138,8 +138,11 @@
     });
 
     $app->post('/api/user/app', function (Request $request, Response $response){
-        $id_token = $request->getParam("id_token");
-        error_log(print_r($idToken, TRUE));
+        $json = $request->getBody();
+        $data = json_decode($json, true);
+
+        $id_token = $data['id_token'];
+        error_log(print_r($id_token, TRUE));
 
         $config = require dirname(__FILE__, 2) . '/config.php';
 
@@ -163,6 +166,81 @@
                 $stmt->execute([$userid]);
             } else{
                 echo "found em!";
+            }
+        } else {
+            return $response->withStatus(300);
+        }
+        
+        $conn = null;
+        return $response->withStatus(200);
+    });
+
+    $app->post('/api/user/app/progress', function (Request $request, Response $response){
+        $json = $request->getBody();
+        $data = json_decode($json, true);
+        $collections = $data['collections'];
+
+        $id_token = $data['id_token'];
+        error_log(print_r($id_token, TRUE));
+
+        $config = require dirname(__FILE__, 2) . '/config.php';
+
+        $client = new Google_Client();
+        $client->setAuthConfig($config->credentialsFile);
+        $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
+        $client->addScope(openid);
+
+        $payload = $client->verifyIdToken($id_token);
+        if ($payload) {
+            $userID = $payload['sub'];
+
+            $conn = connect_db();
+
+            $stmt = $conn->prepare("SELECT * FROM AppUserData WHERE UID = ?;");
+            $stmt->execute([$userID]);
+            $output = $stmt->fetch();
+
+            if($output['UID'] != $userID){
+                echo "you dont exist!";
+            } else{
+                $uid = $output['UserID'];
+                $stmt = $conn->prepare("SELECT CollectionID FROM UserCollectionInprogress WHERE UserID = ?;");
+                $stmt->execute([$uid]);
+                
+                $array = array();
+                while($row = $stmt->fetch()) {
+                    $cid = $row['CollectionID'];
+                    array_push($array, $cid);
+                }
+
+                foreach($collections as $c){
+                    if(in_array($c['cid'], $array)){
+                        //do an update
+                        $landmarks = $c['landmarks'];
+                        $i = 1;
+                        foreach($landmarks as $seen){
+                            if($seen){
+                                $stmt = $conn->prepare("INSERT IGNORE INTO UserLandmarksSeen (UserID, LandmarkID, CollectionID) VALUES (?, ?, ?)");
+	                	        $stmt->execute([$uid, $i, $c['cid']]);
+                            }
+                            $i += 1;
+                        }
+                    } else {
+                        //do an insert
+                        $stmt = $conn->prepare("INSERT INTO UserCollectionInprogress (UserID, CollectionID, NumberOfLandmarksSeen) VALUES (?, ?, ?)");
+	                	$stmt->execute([$uid, $c['cid'], 0]);
+
+                        $landmarks = $c['landmarks'];
+                        $i = 1;
+                        foreach($landmarks as $seen){
+                            if($seen){
+                                $stmt = $conn->prepare("INSERT INTO UserLandmarksSeen (UserID, LandmarkID, CollectionID) VALUES (?, ?, ?)");
+	                	        $stmt->execute([$uid, $i, $c['cid']]);
+                            }
+                            $i += 1;
+                        }
+                    }
+                }
             }
         } else {
             return $response->withStatus(300);

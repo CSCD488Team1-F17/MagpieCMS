@@ -3,31 +3,74 @@ function collectionsInit(){
 }
 
 function displayCollections(collections){
-    var html = '';
+    var html = $("<table>").addClass("table table-striped");
     if(collections != null){
-        html = '' +
-            '<table class="table table-striped">' +
-                '<thead>' +
-                    '<tr>' +
-                        '<th>Name</th>' +
-                        '<th>Description</th>' +
-                    '</tr>' +
-                '</thead>' +
-                '<tbody>';
+        html.append(
+            $('<thead>')).append(
+                $('<tr>').append(
+                    $('<th>').text('Name')
+                ).append(
+                    $('<th>').text('Description')
+                ).append(
+                    $('<th>').text('City')
+                ).append(
+                    $('<th>').text('State')
+                ).append(
+                    $('<th>').text('Status')
+                ).append(
+                    $('<th>')
+                )
+        );
+        body = $('<tbody>');
         for(var i = 0; i < collections.length; i++){
-            html += '<tr>' +
-                    '<td>' + collections[i].Name + '</td>' +
-                    '<td>' + collections[i].Description + '</td>' +
-                '</tr>';
+            buttons = $('<div>');
+            if(collections[i].Status == 1){
+                buttons.append(
+                    $('<button>', {
+                        "class": "btn",
+                        text: "Edit",
+                        onClick: "location.href='/edit/" + collections[i].CID + "';"
+                    }),
+                    $('<button>', {
+                        "class": "btn-danger",
+                        text: "Disable",
+                        onClick: "onClickDisable('" + collections[i].CID + "');"
+                    })
+                )
+            } else {
+                buttons.append(
+                    $('<button>', {
+                        "class": "btn",
+                        text: "Edit",
+                        onClick: "location.href='/edit?" + encodeURI(collections[i].CID) + "';"
+                    }),
+                    $('<button>', {
+                        "class": "btn-success",
+                        text: "Enable",
+                        onClick: "onClickEnable('" + collections[i].CID + "');"
+                    })
+                )
+            }
+            body.append(
+                $('<tr>').append(
+                    $('<td>').text(collections[i].Name)
+                ).append(
+                    $('<td>').text(collections[i].Description)
+                ).append(
+                    $('<td>').text(collections[i].City)
+                ).append(
+                    $('<td>').text(collections[i].State)
+                ).append(
+                    $('<td>').text(collections[i].Status)
+                ).append(buttons)
+            );
         }
 
-        html += '</tbody>' +
-            '</table>';
+        html.append(body);
     } else {
         html = '<p>No collections yet.</p>'
     }
 
-    console.log(html);
     $('#collections').html(html);
 }
 
@@ -70,6 +113,44 @@ function getCollections(userID){
         },
         error: function (err) {
             console.log("Error getting collections.");
+        }
+    });
+}
+
+function onClickDisable(cid){
+    var obj = { 'cid': cid };
+    var json = JSON.stringify(obj);
+
+    //Verify token
+    $.ajax({
+        type: 'POST',
+        url: '/api/collection/disable',
+        data: json,
+        success: function (ret) {
+            //We did it Patrick, we saved the city!
+            collectionsInit();
+        },
+        error: function (err) {
+            console.log("Error disabling collection.");
+        }
+    });
+}
+
+function onClickEnable(cid){
+    var obj = { 'cid': cid };
+    var json = JSON.stringify(obj);
+
+    //Verify token
+    $.ajax({
+        type: 'POST',
+        url: '/api/collection/enable',
+        data: json,
+        success: function (ret) {
+            //We did it Patrick, we saved the city!
+            collectionsInit();
+        },
+        error: function (err) {
+            console.log("Error enabling collection.");
         }
     });
 }

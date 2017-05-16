@@ -89,6 +89,30 @@
         $conn = null;
     });
 
+    $app->post('/api/collection/disable', function (Request $request, Response $response){
+        $conn = connect_db();
+        $json = $request->getBody();
+        $data = json_decode($json, true);
+
+        $cid = $data['cid'];
+        error_log(print_r($cid, TRUE));
+        $stmt = $conn->prepare("UPDATE Collections SET Status = ? WHERE CID = ?");
+        $stmt->execute([0, $cid]);
+        $conn = null;
+    });
+
+    $app->post('/api/collection/enable', function (Request $request, Response $response){
+        $conn = connect_db();
+        $json = $request->getBody();
+        $data = json_decode($json, true);
+
+        $cid = $data['cid'];
+        error_log(print_r($cid, TRUE));
+        $stmt = $conn->prepare("UPDATE Collections SET Status = ? WHERE CID = ?");
+        $stmt->execute([1, $cid]);
+        $conn = null;
+    });
+
     $app->get('/api/landmark/{lid}', function (Request $request, Response $response){
         $conn = connect_db();
         $lid = (int)$request->getAttribute('lid');

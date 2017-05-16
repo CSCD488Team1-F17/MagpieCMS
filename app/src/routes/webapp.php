@@ -120,4 +120,8 @@
     $app->get('/landmarks/{cid}', function(Request $request, Response $response, $args){
         return authCheck('landmarks.twig', $this, $request, $response, ['cid' => (int)$request->getAttribute('cid')]);
     });
+
+    $app->get('/edit/{cid}', function(Request $request, Response $response, $args){
+        return authCheck('edit.twig', $this, $request, $response, ['cid' => (int)$request->getAttribute('cid')]);
+    });
 ?>

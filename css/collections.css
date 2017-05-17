@@ -1,0 +1,49 @@
+body
+{
+	background: white;
+}
+
+.jumbotron
+{
+    background: #40AAF2; 
+    background: -webkit-linear-gradient(left, #4055F2, #50D2B4); 
+    background: -o-linear-gradient(right, #4055F2, #50D2B4); 
+    background: -moz-linear-gradient(right, #4055F2, #50D2B4); 
+}
+
+h1, p, a
+{
+	font-family: Montserrat;
+}
+
+h1
+{
+	height: 58px;
+	width: 824px;
+	color: #A7ACB3;
+	font-size: 48px;
+	font-weight: bold;
+	line-height: 58px;
+	text-align: center;
+}
+
+a
+{
+	height: 1.65%;
+	width: 9.96%;
+	color: #C8CDD5;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 18px;
+	text-align: center;
+}
+
+p
+{
+	height: 29px;
+	width: 393.03px;
+	color: #231F20;
+	font-size: 24px;
+	font-weight: 300;
+	line-height: 29px;
+}

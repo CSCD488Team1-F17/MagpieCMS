@@ -1,0 +1,61 @@
+h1 /*.create-your-collecti*/ 
+{
+	height: 3.44%;
+	width: 73.89%;
+	color: #A7ACB3;
+	font-family: Montserrat;
+	font-size: 48px;
+	font-weight: bold;
+	line-height: 58px;
+	text-align: center;
+}
+
+h4
+{
+	height: 22px;
+	width: 238.66px;
+	color: #52D291;
+	font-family: Montserrat;
+	font-size: 18px;
+	font-weight: bold;
+	line-height: 22px;
+}
+
+a
+{
+	height: 1.07%;
+	width: 9.96%;
+	color: #C8CDD5;
+	font-family: Montserrat;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 18px;
+	text-align: center;
+}
+
+lable
+{
+	height: 14px;
+	width: 459.56px;
+	color: #231F20;
+	font-family: Montserrat;
+	font-size: 11px;
+	font-weight: 300;
+	line-height: 14px;
+}
+
+.browse
+{
+	height: 26px;
+	width: 108px;
+	border-radius: 13px;
+	background-color: #52D291;
+}
+
+.btn-prev, .btn-save, .btn-next
+{
+	height: 2.37%;
+	width: 19.73%;
+	border-radius: 24px;
+	background-color: #52D291;
+}

@@ -1,6 +1,32 @@
+html, body
+{
+	height: 100%;
+}
+
 body
 {
 	background: white;
+}
+
+#wrapper
+{
+    min-height: 100%;
+    position: relative;
+}
+
+#content
+{
+	padding-bottom:50px; 
+}
+
+img
+{
+    display: block;
+    margin: auto;
+    padding-top: 4em;
+	overflow: hidden;
+	vertical-align:bottom;
+    border:0;
 }
 
 .jumbotron
@@ -18,8 +44,6 @@ h1, h2, h3, h4, a, p
 
 h1 /*.create-your-collecti*/ 
 {
-	height: 3.44%;
-	width: 73.89%;
 	color: #A7ACB3;
 	font-size: 48px;
 	font-weight: bold;
@@ -29,8 +53,6 @@ h1 /*.create-your-collecti*/
 
 h4
 {
-	height: 22px;
-	width: 238.66px;
 	color: #40AAF2;
 	font-size: 18px;
 	font-weight: bold;
@@ -39,8 +61,6 @@ h4
 
 a
 {
-	height: 1.07%;
-	width: 9.96%;
 	color: #C8CDD5;
 	font-size: 14px;
 	font-weight: bold;
@@ -50,8 +70,6 @@ a
 
 lable
 {
-	height: 14px;
-	width: 459.56px;
 	color: #231F20;
 	font-size: 11px;
 	font-weight: 300;
@@ -60,8 +78,6 @@ lable
 
 h2
 {
-	height: 0.83%;
-	width: 4.98%;
 	color: #FFFFFF;
 	font-size: 11px;
 	font-weight: 500;
@@ -70,8 +86,6 @@ h2
 
 h3
 {
-	height: 22px;
-	width: 98.78px;
 	color: #FFFFFF;
 	font-size: 18px;
 	font-weight: bold;
@@ -93,4 +107,56 @@ h3
 	width: 19.73%;
 	border-radius: 24px;
 	background-color: #40AAF2;
+}
+
+#footer
+{
+	width:100%;
+	height:55px;
+	position:absolute;
+	bottom:0;
+	left:0;
+}
+
+/********************
+MEDIA QUERIES
+*******************/
+/* Mobile: 320px = 20em */
+@media screen and (min-width: 20em)
+{ 
+    img
+	{
+        max-height: 60%;
+        max-width: 60%;
+    }
+	
+	.row.equal 
+	{
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+}
+
+/* Tablet:  768px = 160em */
+@media screen and (min-width: 48em)
+{
+    img
+	{
+        max-hight: 20em;
+        max-width: 20em;
+    }
+	
+	.row.equal 
+	{
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+}
+
+/* Desktop: 1280px = 80em */
+@media screen and (min-width: 80em)
+{
+
 }

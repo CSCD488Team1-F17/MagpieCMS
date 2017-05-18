@@ -1,15 +1,15 @@
-body 
+html, body 
 {
 	height:100%;
 }
 
 body
 {
-    background: #40AAF2; 
-    background: -webkit-linear-gradient(bottom right, #4055F2, #50D2B4); 
+    background: #FFFFFF; 
+    /*background: -webkit-linear-gradient(bottom right, #4055F2, #50D2B4); 
     background: -o-linear-gradient(top left, #4055F2, #50D2B4); 
     background: -moz-linear-gradient(top left, #4055F2, #50D2B4); 
-    background: linear-gradient(to top left, #4055F2, #50D2B4);
+    background: linear-gradient(to top left, #4055F2, #50D2B4);*/
 }
 
 #wrapper
@@ -33,11 +33,17 @@ img
     border:0;
 }
 
-h1, h2, h3, h4
+h1, h2, h3, h4, h5
 {
-    color: white;
+    color: black;
 	font-family: Montserrat;
     text-align: center;
+}
+
+h5
+{
+	font-size: 50px;
+	font-weight: bold;
 }
 
 h1
@@ -58,7 +64,7 @@ h3
 
 p
 {
-    color: white;
+    color: black;
 	font-size: 20px;
 	font-weight: 300;
 	text-align: left;

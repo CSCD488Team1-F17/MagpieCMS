@@ -117,7 +117,7 @@
         return authCheck('account.twig', $this, $request, $response, $args);
     });
 
-    $app->get('/landmarks/{cid}', function(Request $request, Response $response, $args){
+    $app->get('/landmarks/{cid}', function(Request $req, Response $response, $args){
         $numBadge;
         $ara = array();
         $araDesc = array();
@@ -145,10 +145,10 @@
             }
 
             $conn = null;
-            return authCheck('landmarks.twig', $this, $request, $response, ['cid' => (int)$req->getAttribute('cid'), 'numBadge' => $numBadge, 'numCount' => $landmarkCount, 'incomingData' => 1, 'landmarks' => json_encode($ara), 'landmarkDesc' => json_encode($araDesc)]);
+            return authCheck('landmarks.twig', $this, $req, $response, ['cid' => (int)$req->getAttribute('cid'), 'numBadge' => $numBadge, 'numCount' => $landmarkCount, 'incomingData' => 1, 'landmarks' => json_encode($ara), 'landmarkDesc' => json_encode($araDesc)]);
         }else{
             $conn = null;
-            return authCheck('landmarks.twig', $this, $request, $response, ['cid' => (int)$req->getAttribute('cid'), 'numBadge' => $numBadge, 'numCount' => $landmarkCount, 'incomingData' => 0]);
+            return authCheck('landmarks.twig', $this, $req, $response, ['cid' => (int)$req->getAttribute('cid'), 'numBadge' => $numBadge, 'numCount' => $landmarkCount, 'incomingData' => 0]);
         }
 
     });

@@ -536,11 +536,16 @@
             $lid = $row['MaxLid'];
         }
 
+        $output = $conn->query("SELECT MAX(DesID) AS MaxDesID FROM LandmarkDescription;");
+        while($row = $output->fetch()) {
+            $desid = $row['MaxDesID'];
+        }
+
         $stmt = $conn->prepare("INSERT INTO CollectionLandmarks (CollectionID, LandmarkID) VALUES (?, ?)");
         $stmt->execute([$cid, $lid]);
 
-        $stmt = $conn->prepare("INSERT INTO LandmarkDescription (LID, CID, Description) VALUES (?, ?, ?)");
-        $stmt->execute([$lid, $cid, $description]);
+        $stmt = $conn->prepare("INSERT INTO LandmarkDescription (DesID, LID, CID, Description) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$desid, $lid, $cid, $description]);
 
         $conn = null;
         return $lid;

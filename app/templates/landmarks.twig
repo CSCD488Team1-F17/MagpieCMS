@@ -13,6 +13,8 @@
                 for(i = 1; i <= existing; i++){
                     lids[i] = data[i-1].LID;
                     $("#name" + i).val(data[i-1].Name);
+                    $("#long" + i).val(data[i-1].Longitude);
+                    $("#lat" + i).val(data[i-1].Latitude);
                     for(var x in desc){
                         //console.log(x);
                         if(desc[x].LID == data[i-1].LID){

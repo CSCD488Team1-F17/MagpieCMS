@@ -175,7 +175,75 @@
         return $response->withStatus(200);
     });
 
-    $app->post('/api/user/app/progress', function (Request $request, Response $response){
+    $app->post('/api/user/app/progress/pull', function (Request $request, Response $response){
+        $json = $request->getBody();
+        $data = json_decode($json, true);
+
+        $id_token = $data['id_token'];
+        error_log(print_r($id_token, TRUE));
+
+        $config = require dirname(__FILE__, 2) . '/config.php';
+
+        $client = new Google_Client();
+        $client->setAuthConfig($config->credentialsFile);
+        $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
+        $client->addScope(openid);
+
+        $payload = $client->verifyIdToken($id_token);
+        if ($payload) {
+            $userID = $payload['sub'];
+
+            $conn = connect_db();
+
+            $stmt = $conn->prepare("SELECT * FROM AppUserData WHERE UID = ?;");
+            $stmt->execute([$userID]);
+            $output = $stmt->fetch();
+
+            if($output['UID'] != $userID){
+                echo "you dont exist!";
+            } else{
+                $uid = $output['UserID'];
+                $stmt = $conn->prepare("SELECT CollectionID FROM UserCollectionInprogress WHERE UserID = ?;");
+                $stmt->execute([$uid]);
+                
+                $collections = array();
+                while($row = $stmt->fetch()) {
+                    $cid = $row['CollectionID'];
+                    array_push($collections, $cid);
+                }
+
+                $landmarks = array();
+                $i = 0;
+                foreach($collections as $cid){
+                    $landmarks[$i] = array();
+
+                    $stmt = $conn->prepare("SELECT LandmarkID FROM UserLandmarksSeen WHERE UserID = ? AND CollectionID = ?;");
+                    $stmt->execute([$uid, $cid]);
+                    while($row = $stmt->fetch()) {
+                        $lid = $row['LandmarkID'];
+                        array_push($landmarks[$i], $lid);
+                    }
+                    $i += 1;
+                }
+
+                $objArray = array();
+                $i = 0;
+                foreach($collections as $cid){
+                    $objArray[$i] = (object) ["cid" => $cid, "landmarks" => $landmarks[$i]];
+                }
+
+                return $response->withJson($objArray);
+            }
+        } else {
+            error_log(print_r("Sending back a 300", TRUE));
+            return $response->withStatus(300);
+        }
+        
+        $conn = null;
+        return $response->withStatus(200);
+    });
+
+    $app->post('/api/user/app/progress/push', function (Request $request, Response $response){
         $json = $request->getBody();
         $data = json_decode($json, true);
         $collections = $data['collections'];
@@ -243,6 +311,7 @@
                 }
             }
         } else {
+            error_log(print_r("Sending back a 300", TRUE));
             return $response->withStatus(300);
         }
         

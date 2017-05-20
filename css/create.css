@@ -31,11 +31,14 @@ img
 
 .jumbotron
 {
-    background: #40AAF2; 
-    background: -webkit-linear-gradient(left, #4055F2, #50D2B4); 
-    background: -o-linear-gradient(right, #4055F2, #50D2B4); 
-    background: -moz-linear-gradient(right, #4055F2, #50D2B4); 
+	  background: url(../img/MagpieOld.png) no-repeat center center;
+    background-color: #000000;
+	  background-size: contain;
+		height: 128px; 
+		width: 100%;
+		margin-bottom: 0px
 }
+
 
 ul
 {

@@ -360,9 +360,13 @@
         $userID = $data['UserID'];
         error_log(print_r($userID, TRUE));
         $conn = connect_db();
-
-        $stmt = $conn->prepare("SELECT CollectionID FROM UserMadeCollectionList WHERE UserID = ?;");
-        $stmt->execute([$userID]);
+        if($userID == 0){
+            $stmt = $conn->prepare("SELECT CollectionID FROM UserMadeCollectionList;");
+            $stmt->execute([$userID]);
+        } else {
+            $stmt = $conn->prepare("SELECT CollectionID FROM UserMadeCollectionList WHERE UserID = ?;");
+            $stmt->execute([$userID]);
+        }
 
         $result = array();
         while($row = $stmt->fetch()) {

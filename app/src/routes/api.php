@@ -569,4 +569,16 @@
         $stmt = $conn->prepare("UPDATE LandmarkDescription SET Description = ? WHERE LID = ? AND CID = ?");
         $stmt->execute([$description, (int)$request->getAttribute("lid"), $cid]);
     });
+	
+	$app->post('/add/awards', function(Request $request){
+		$cid =(int)$request->getParam("cid");
+		$name = $request->getParam("name");
+		$lat = $request->getParam("latitude");
+		$long = $request->getParam("longitude");
+		$termsAndConditions = $request->getParam("termsAndConditions");
+		$conn = connect_db();	
+		$stmt = $conn->prepare("INSERT INTO Awards (CID, Name, Latitude, Longitude, optionalConditions) VALUES ?, ?, ?, ?, ?;");
+		$stmt->execute([$cid, $name, $lat, $long, $termsAndConditions]);
+		$conn = null;
+	});
 ?>

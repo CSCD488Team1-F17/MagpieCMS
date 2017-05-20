@@ -235,5 +235,10 @@
         } else {
             echo "hey!";
         }
-	});	
+	});
+
+	$app->get('/awards/{cid}', function(Request $request, Response $response, $args){
+		$cid = (int)$request->getAttribute('cid');
+        return authCheck('awards.twig', $this, $request, $response, ['cid'=> $cid]);
+    });
 ?>

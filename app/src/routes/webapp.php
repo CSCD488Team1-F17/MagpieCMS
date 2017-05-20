@@ -121,6 +121,10 @@
         return authCheck('landmarks.twig', $this, $request, $response, ['cid' => (int)$request->getAttribute('cid')]);
     });
 
+    $app->get('/view/{cid}', function(Request $request, Response $response, $args){
+        return authCheck('view.twig', $this, $request, $response, ['cid' => (int)$request->getAttribute('cid')]);
+    });
+
 	$app->get('/edit/{cid}', function(Request $request, Response $response, $args){
 		$cid = (int)$request->getAttribute('cid');
 		$conn = connect_db();

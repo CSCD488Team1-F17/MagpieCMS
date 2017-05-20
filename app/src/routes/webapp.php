@@ -24,6 +24,66 @@
         }
     }
 
+    function canEdit(Response $response, $cid){
+        session_start();
+
+        $config = require dirname(__FILE__, 2) . '/config.php';
+
+        $client = new Google_Client();
+        $client->setAuthConfig($config->credentialsFile);
+
+        if(isset($_SESSION['access_token']) && $_SESSION['access_token']){
+            error_log(print_r("access_token SET", TRUE));
+            $client->setAccessToken($_SESSION['access_token']);
+            $token = $client->getAccessToken();
+            $client->setAccessToken($token);
+
+            error_log(print_r("Checking token data...", TRUE));
+            if($token_data = $client->verifyIdToken()){
+                $userid = $token_data['sub'];
+
+                $conn = connect_db();
+
+                $stmt = $conn->prepare("SELECT * FROM WebUserData WHERE UID = ?;");
+                $stmt->execute([$userid]);
+                $output = $stmt->fetch();
+
+                if($output['UID'] == $userid){
+                    error_log(print_r("UID matches userID", TRUE));
+                    error_log(print_r($output['UserID'], TRUE));
+                    $stmt = $conn->prepare("SELECT * FROM UserMadeCollectionList WHERE (UserID = ? AND CollectionID = ?);");
+                    $stmt->execute([$output['UserID'], $cid]);
+                    if($stmt->fetch()){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else{
+                    return false;
+                }
+
+            } else {
+                return false;
+            }
+        } else{
+            error_log(print_r("access_token NOT SET", TRUE));
+            error_log(print_r($response, TRUE));
+            if($response->withRedirect('/oauth2callback')){
+                error_log(print_r("access_token SET", TRUE));
+                $client->setAccessToken($_SESSION['access_token']);
+                $token = $client->getAccessToken();
+                $client->setAccessToken($token);
+
+                error_log(print_r("Checking token data...", TRUE));
+                if($token_data = $client->verifyIdToken()){
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
+
     // Routes
     $app->get('/', function (Request $request, Response $response, $args) {
         return $this->renderer->render($response, 'index.html', $args);
@@ -159,17 +219,21 @@
 
 	$app->get('/edit/{cid}', function(Request $request, Response $response, $args){
 		$cid = (int)$request->getAttribute('cid');
-		$conn = connect_db();
-		$stmt = $conn->prepare("SELECT * FROM Collections WHERE CID = ?;");
-		$stmt->execute([$cid]);
-		$result = $stmt->fetch();
-		$name = $result['Name'];
-		$abbreviation = $result['Abbreviation'];
-		$description = $result['Description'];
-		$numberOfLandmarks = $result['NumberOfLandmarks'];
-		$isOrder = $result['IsOrder'];
-		
-		return authCheck('edit.twig', $this, $request, $response, ['cid'=>$cid, 'name'=>$name, 'abbreviation'=>$abbreviation, 'description'=>$description, 
-		'numberOfLandmarks'=>$numberOfLandmarks, 'isOrder'=>$isOrder]);
+        if(canEdit($response, $cid)){
+            $conn = connect_db();
+            $stmt = $conn->prepare("SELECT * FROM Collections WHERE CID = ?;");
+            $stmt->execute([$cid]);
+            $result = $stmt->fetch();
+            $name = $result['Name'];
+            $abbreviation = $result['Abbreviation'];
+            $description = $result['Description'];
+            $numberOfLandmarks = $result['NumberOfLandmarks'];
+            $isOrder = $result['IsOrder'];
+            
+            return authCheck('edit.twig', $this, $request, $response, ['cid'=>$cid, 'name'=>$name, 'abbreviation'=>$abbreviation, 'description'=>$description, 
+            'numberOfLandmarks'=>$numberOfLandmarks, 'isOrder'=>$isOrder]);
+        } else {
+            echo "hey!";
+        }
 	});	
 ?>

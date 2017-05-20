@@ -13,15 +13,16 @@
                 <div style="padding: 15px"></div>
                 <h4 style="color:#52D291"><strong>LOCATION</strong></h4>
                 <div></div>
-				<label>What is the name of the place that scavengers need to visit to collect their awards?</label>
-				<textarea class="form-control" rows="1" id="locationName"></textarea>
+                <label>What is the name of the place that scavengers need to visit to collect their awards?</label> 
+                <textarea class="form-control" rows="1" id="locationName"></textarea>
                 <div style="padding: 15px"></div>
-				<label>Click to enter a pin on the map or enter the latitude and longitude for the award location.</label>
-				<h4 style="color:#52D291"><strong>TERMS AND CONDITIONS (optional)</strong></h4>
-				<div></div>
-				<label>If any terms or conditions apply to the award or to the collection of the award, please state or describe them below.</label>
-				<textarea class="form-control" rows="4" id="termsAndConditions"></textarea>
-				<div style="padding: 15px"></div>
+				<label><small>Click to enter a pin on the map or enter the latitude and longitude for the award location.</small></label>
+				<div style="padding: 10px"></div>
+                <h4 style="color:#52D291"><strong>TERMS AND CONDITIONS (optional)</strong></h4>
+                <div></div>
+                <label>If any terms or conditions apply to the award or to the collection of the award, please state or describe them below.</label> 
+                <textarea class="form-control" rows="6" id="optionalConditions"></textarea>
+                <div style="padding: 15px"></div> 
             </div>
             <div class="col-md-5"></div>
         </div>
@@ -40,13 +41,13 @@
         <script>
             $(document).on('click', '#btn-next', function(){
                 var name = $("#name").val();
-				var termsAndConditions = $("#termsAndConditions").val();
-                var cid = {{cid|json_encode|raw}};
+				var optionalConditions = $("#optionalConditions").val();
+                var cid = {{ cid|json_encode|raw}};
                 var form = $('form')[0]; 
                 var formData = new FormData(form);
                 formData.append("cid", cid);
                 formData.append("name", name);
-                formData.append("termsAndConditions", termsAndConditions);
+				formData.append("optionalConditions", optionalConditions);
                 $.ajax({
                     url:'/add/awards',
                     type:'post',

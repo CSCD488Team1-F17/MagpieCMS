@@ -20,7 +20,7 @@
         if (empty($files['newfile'])) {
             throw new Exception('Expected a newfile');
         }
-    
+
         $newfile = $files['newfile'];
 		$cid = $request->getParam('CID');
         if ($newfile->getError() === UPLOAD_ERR_OK) {
@@ -34,7 +34,7 @@
         if (empty($files['newfile'])) {
             throw new Exception('Expected a newfile');
         }
-		
+
         $newfile = $files['newfile'];
 		$cid = $request->getParam('CID');
         if ($newfile->getError() === UPLOAD_ERR_OK) {
@@ -53,7 +53,7 @@
         if (empty($files['newfile'])) {
             throw new Exception('Expected a newfile');
         }
-		
+
         $newfile = $files['newfile'];
 		$lid = $request->getParam('LID');
 		$cid = $request->getParam('CID');
@@ -67,7 +67,7 @@
 		$stmt->execute([$cid, $uploadFileName, $imageType]);
 		$conn = null;
     });
-	
+
     $app->get('/api/collection/', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();
@@ -167,7 +167,7 @@
         } else {
             return $response->withStatus(300);
         }
-        
+
         $conn = null;
         return $response->withStatus(200);
     });
@@ -217,7 +217,7 @@
 
         $stmt = $conn->prepare("SELECT CollectionID FROM UserMadeCollectionList WHERE UserID = ?;");
         $stmt->execute([$userID]);
-        
+
         $result = array();
         while($row = $stmt->fetch()) {
             $cid = $row['CollectionID'];
@@ -242,8 +242,8 @@
         return $response->withHeader('Content-Type', 'image/png');
         //echo $image;
     });
-	
-	
+
+
 	$app->post('/database/collection', function(Request $request){
 		$cid =(int)$request->getParam("cid") + 1;
 		$name = $request->getParam("name");
@@ -254,9 +254,9 @@
 		//$picID = (int)superbadgeUpload($request);
 
         error_log(print_r($idToken, TRUE));
-        
-		
-		$conn = connect_db();	
+
+
+		$conn = connect_db();
 		$stmt = $conn->prepare("INSERT INTO Collections (Name, Description, NumberOfLandMarks, IsOrder) VALUES (?, ?, ?, ?)");
 		$stmt->execute([$name, $description, $numberOfLandmarks, $isOrdered]);
 
@@ -297,7 +297,7 @@
 
     // $app->post('/database/user', function(Request $request){
     //     $params = $request->getParsedBody();
-    //     $id_token = $params['id_token']; 
+    //     $id_token = $params['id_token'];
 	// });
 
     function superbadgeUpload($request){
@@ -307,7 +307,7 @@
         if (empty($files['newfile'])) {
             throw new Exception('Expected a newfile');
         }
-    
+
         $newfile = $files['newfile'];
         if ($newfile->getError() === UPLOAD_ERR_OK) {
             $uploadFileName = $newfile->getClientFilename();
@@ -325,22 +325,22 @@
 
         return $pid;
     }
-	
+
 	$app->get('/images/collection/{cid}', function (Request $request, Response $response){
         $conn = connect_db();
 		$cid = (int)$request->getAttribute('cid');
 		$fileName = "Collection".$cid."Images.zip";
-		
+
 		//Folder name for collection images assumed to be just the CID
 		$rootPath = realpath("../Resources/Images/$cid");
 		$zip = new ZipArchive();
 		if ($zip->open($fileName, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE) !== TRUE) {
 			die ("An error occurred creating your ZIP file.");
 		}
-		
-		$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath), 
+
+		$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath),
 		RecursiveIteratorIterator::LEAVES_ONLY);
-		
+
 		foreach($files as $name => $file)
 		{
 			if(!$file->isDir())
@@ -348,7 +348,7 @@
 					$filePath = $file->getRealPath();
 					$relativePath = substr($filePath, strlen($rootPath) + 1);
 					$zip->addFile($filePath, 'Images/'.$relativePath);
-			}	
+			}
 		}
 		$zip->close();
 		readFile($fileName);
@@ -357,5 +357,47 @@
 		return $response->withHeader("Content-Type", "application/zip")
 		->withHeader("Content-Disposition", "attachment; filename=$fileName")
 		->withHeader("Cache-Control", "no-store,no-cache");
+    });
+
+    $app->post('/database/landmark', function(Request $request) {
+        $name = $request->getParam("name");
+        $long = (double)$request->getParam("long");
+        $lat = (double)$request->getParam("lat");
+        $cid = (int)$request->getParam("cid");
+        $description = $request->getParam("description");
+
+        $conn = connect_db();
+        $stmt = $conn->prepare("INSERT INTO Landmarks (Name, Longitude, Latitude) VALUES (?, ?, ?)");
+        $stmt->execute([$name, $long, $lat]);
+
+        $lid;
+        $output = $conn->query("SELECT MAX(LID) AS MaxLid FROM Landmarks;");
+        while($row = $output->fetch()) {
+            $lid = $row['MaxLid'];
+        }
+
+        $stmt = $conn->prepare("INSERT INTO CollectionLandmarks (CollectionID, LandmarkID) VALUES (?, ?)");
+        $stmt->execute([$cid, $lid]);
+
+        $stmt = $conn->prepare("INSERT INTO LandmarkDescription (LID, CID, Description) VALUES (?, ?, ?)");
+        $stmt->execute([$lid, $cid, $description]);
+
+        $conn = null;
+        return $lid;
+	});
+
+    $app->post('/database/landmark/update/{lid}', function(Request $request){
+        $name = $request->getParam("name");
+        $long = (double)$request->getParam("long");
+        $lat = (double)$request->getParam("lat");
+        $cid = (int)$request->getParam("cid");
+        $description = $request->getParam("description");
+
+        $conn = connect_db();
+        $stmt = $conn->prepare("UPDATE Landmarks SET Name = ?, Longitude = ?, Latitude = ? WHERE LID = ?");
+        $stmt->execute([$name, $long, $lat, (int)$request->getAttribute("lid")]);
+
+        $stmt = $conn->prepare("UPDATE LandmarkDescription SET Description = ? WHERE LID = ? AND CID = ?");
+        $stmt->execute([$description, (int)$request->getAttribute("lid"), $cid]);
     });
 ?>

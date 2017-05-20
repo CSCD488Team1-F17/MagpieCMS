@@ -88,6 +88,9 @@ function getUser(){
         data: json,
         success: function (ret) {
             if(ret != null){
+                if(ret.UserID == 0) {
+                    $('#h1col').text("ALL COLLECTIONS");
+                }
                 getCollections(ret.UserID);
             } else {
                 //The user doesnt exist?!?!

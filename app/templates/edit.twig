@@ -1,7 +1,6 @@
 {% extends "base.twig" %}
 
 {% block content %}
-<link rel="stylesheet" href="/css/create.css">
     <div class="container">
         <h1>CREATE YOUR COLLECTION</h1>
         <div class="row">
@@ -10,17 +9,17 @@
                 <h4 style="color:#52D291"><strong>NAME</strong></h4>
                 <div></div>
                 <label>What is the collection name you'd like scavengers to see?</label> 
-                <textarea class="form-control" rows="1" id="name"></textarea>
+                <textarea class="form-control" rows="1" id="name">{{name}}</textarea>
                 <div style="padding: 15px"></div>
                 <h4 style="color:#52D291"><strong>ABBREVIATION</strong></h4>
                 <div></div>
                 <label>What is the three letter abbreviation you'd like scavengers to see?</label> 
-                <textarea class="form-control" rows="1" id="abbreviation" style="width:25%"></textarea>
+                <textarea class="form-control" rows="1" id="abbreviation" style="width:25%">{{abbreviation}}</textarea>
                 <div style="padding: 15px"></div>
                 <h4 style="color:#52D291"><strong>SUMMARY</strong></h4>
                 <div></div>
                 <label>Please provide a brief description of your collection. Description can include information such as: general location, types of badges to expect, purpose, etc.</label> 
-                <textarea class="form-control" rows="6" id="summary"></textarea>
+                <textarea class="form-control" rows="6" id="summary">{{description}}</textarea>
                 <div style="padding: 15px"></div>
                 <h4 style="color:#52D291"><strong>SUPERBADGE</strong></h4>
                 <div></div>
@@ -31,7 +30,7 @@
                     </div>
                     <div class="col-md-3">
                         <form method="POST" enctype="multipart/form-data" id="sbupload">
-                            <label class="btn btn-default btn-file" id="browse">Browse
+                            <label class="btn btn-default btn-file" style="border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;">Browse
                             <input type="file" name="newfile" style="display: none;" onchange="setName(this.value);">
                             </label>
                         </form>
@@ -41,27 +40,33 @@
                 <h4 style="color:#52D291"><strong>BADGE QUANTITY</strong></h4>
                 <div></div>
                 <label>For now, how many badges will be in your collection</label> 
-                <textarea class="form-control" rows="1" id="badgeq" style="width:25%"></textarea>
+                <textarea class="form-control" rows="1" id="badgeq" style="width:25%">{{numberOfLandmarks}}</textarea>
                 <div style="padding: 30px"></div>
                 <h4 style="color:#52D291"><strong>BADGE ORDER</strong></h4>
                 <div></div>
                 <label>Would you like the badges in the collection to be in a specific order?</label>
                 <div></div>
-                <label class="radio-inline"><input type="radio" name="optradio" class="orderCollection" value="1">Yes</label>
-                <label class="radio-inline"><input type="radio" name="optradio" class="orderCollection" value="0">No</label>
+				{% if isOrder == 1 %}
+                <label class="radio-inline"><input type="radio" name="optradio" class="orderCollection" value="1" checked>Yes</label>
+				<label class="radio-inline"><input type="radio" name="optradio" class="orderCollection" value="0">No</label>
+				{% else %}
+				<label class="radio-inline"><input type="radio" name="optradio" class="orderCollection" value="1">Yes</label>
+				<label class="radio-inline"><input type="radio" name="optradio" class="orderCollection" value="0" checked>No</label>
+				{% endif %}
+
                 <div style="padding: 30px"></div> 
             </div>
             <div class="col-md-5"></div>
         </div>
         <div class="row">
             <div class="col-md-4">
-                <button id="btn-prev" class="btn btn-default btn-md pull-right" >Previous</button>  
+                <button id="btn-prev" class="btn btn-default btn-md pull-right" style="border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;">Previous</button>  
             </div>
             <div class="col-md-4 text-center">
-                <button class="btn btn-default btn-md" id="btn-save">Save</button> 
+                <button class="btn btn-default btn-md" style="border-radius: 17px; background: #52D291; padding-left: 40px; padding-right: 40px;" id="btn-save">Save</button> 
             </div>
             <div class="col-md-4">
-                <button class="btn btn-default btn-md pull-left" id="btn-next">Next</button>
+                <button class="btn btn-default btn-md pull-left" style="border-radius: 17px; background: #52D291; padding-left: 40px; padding-right: 40px;" id="btn-next">Next</button>
             </div>
         </div>
         <div style="padding: 30px"></div>
@@ -72,9 +77,9 @@
         	}
         </script>
         <script>
-            $(document).on('click', '#btn-next', function(){
-                //var cid = parseInt($('#cid').text());
+            $(document).on('click', '#btn-save', function(){
                 var name = $("#name").val();
+				var abbreviation = $("#abbreviation").val();
                 var summary = $("#summary").val();
                 var numBadge = $("#badgeq").val();
                 var ordered = $(".orderCollection:checked").val();
@@ -83,17 +88,12 @@
                 var formData = new FormData(form);
                 formData.append("cid", cid);
                 formData.append("name", name);
+				formData.append("abbreviation", abbreviation);
                 formData.append("summary", summary);
                 formData.append("numBadge", numBadge);
                 formData.append("ordered", ordered);
-
-                var GoogleUser = GoogleAuth.currentUser.get();
-                var id_token = GoogleUser.getAuthResponse().id_token;
-
-                formData.append("idToken", id_token);
-
                 $.ajax({
-                    url:'/database/collection',
+                    url:'/edit/collection',
                     type:'post',
                     data:formData,
                     contentType: false,

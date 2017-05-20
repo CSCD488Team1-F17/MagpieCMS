@@ -1,0 +1,162 @@
+var count = 1;
+var lids = {};
+function append(){
+    var panel = "<div class=\"panel panel-default\">" +
+                "<div class=\"panel-body text-center\" style=\"background-color: #40AAF2\" data-toggle=\"collapse\" data-target=#"+ count +">Badge "+count+"</div>" +
+            "</div>";
+
+    var collapseable = "<div id="+ count +" class=\"collapse\">" +
+                        "<h4 style=\"color:#40AAF2\"><strong>NAME</strong></h4>" +
+                        "<div></div>" +
+                        "<label>What is this item or location called?</label>" +
+                        "<input type=\"text\" class=\"form-control\" id=\"name"+count+"\"></input>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>LOCATION</strong></h4>" +
+                        "<div></div>" +
+                        "<label>To locate this item, click to drop a pin on the map or enter the latitude and longitude.</label>" +
+                        "<div id=\"map"+count+"\" style=\"width:100%;height:500px;\"></div>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<div class=\"row\">" +
+                            "<div class=\"col-md-6\">" +
+                                "<div class=\"form-group\">" +
+                                    "<label for=\"Latatude\">Landmark Lat:</label>" +
+                                    "<input type=\"text\" class=\"form-control\" id=\"lat"+count+"\">" +
+                                "</div>" +
+                            "</div>" +
+                            "<div class=\"col-md-6\">" +
+                                "<div class=\"form-group\">" +
+                                    "<label for=\"Longitude\">Landmark Long:</label>" +
+                                    "<input type=\"text\" class=\"form-control\" id=\"long"+count+"\">" +
+                                "</div>" +
+                            "</div>" +
+                        "</div>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<div class=\"row\">" +
+                            "<div class=\"col-md-9\">" +
+                                "<textarea class=\"form-control\" rows=\"1\" id=\"picname"+count+"\" readonly></textarea>" +
+                            "</div>" +
+                            "<div class=\"col-md-3\">" +
+                                "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;\">Browse" +
+                                    "<input id=\"pic"+count+"\" type=\"file\" name=\"newfile\" style=\"display: none;\" onchange=\"setNameImg(this.value);\">" +
+                                "</label>" +
+                            "</div>" +
+                        "</div>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<div class=\"row\">" +
+                            "<div class=\"col-md-9\">" +
+                                "<textarea class=\"form-control\" rows=\"1\" id=\"logoname"+count+"\" readonly></textarea>" +
+                            "</div>" +
+                            "<div class=\"col-md-3\">" +
+                                    "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;\">Browse" +
+                                    "<input id=\"logo"+count+"\" type=\"file\" name=\"newfile\" style=\"display: none;\" onchange=\"setNameLogo(this.value);\">" +
+                                    "</label>" +
+                            "</div>" +
+                        "</div>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                            "<h4 style=\"color:#52D291\"><strong>DESCRIPTION</strong></h4>" +
+                            "<div></div>" +
+                            "<label>Please provide a brief description of your collection. Description can include information such as: general location, types of badges to expect, purpose, etc.</label>" +
+                            "<textarea class=\"form-control\" rows=\"6\" id=\"description"+count+"\"></textarea>" +
+                            "<div style=\"padding: 15px\"></div>" +
+                    "</div>" +
+                "</div>";
+    $("#badgeContainer").append(panel);
+    $("#badgeContainer").append(collapseable);
+    count++;
+}
+
+function onLoad(num){
+    for(i = 0; i < num; i++){
+        var panel = "<div class=\"panel panel-default\">" +
+                "<div class=\"panel-body text-center\" style=\"background-color: #40AAF2\" data-toggle=\"collapse\" data-target=#"+ count +">Badge "+count+"</div>" +
+            "</div>";
+
+        var collapseable = "<div id="+ count +" class=\"collapse\">" +
+                        "<h4 style=\"color:#40AAF2\"><strong>NAME</strong></h4>" +
+                        "<div></div>" +
+                        "<label>What is this item or location called?</label>" +
+                        "<input type=\"text\" class=\"form-control\" id=\"name"+count+"\"></input>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>LOCATION</strong></h4>" +
+                        "<div></div>" +
+                        "<label>To locate this item, click to drop a pin on the map or enter the latitude and longitude.</label>" +
+                        "<div id=\"map"+count+"\" style=\"width:100%;height:500px;\"></div>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<div class=\"row\">" +
+                            "<div class=\"col-md-6\">" +
+                                "<div class=\"form-group\">" +
+                                    "<label for=\"Latatude\">Landmark Lat:</label>" +
+                                    "<input type=\"text\" class=\"form-control\" id=\"lat"+count+"\">" +
+                                "</div>" +
+                            "</div>" +
+                            "<div class=\"col-md-6\">" +
+                                "<div class=\"form-group\">" +
+                                    "<label for=\"Longitude\">Landmark Long:</label>" +
+                                    "<input type=\"text\" class=\"form-control\" id=\"long"+count+"\">" +
+                                "</div>" +
+                            "</div>" +
+                        "</div>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<div class=\"row\">" +
+                            "<div class=\"col-md-9\">" +
+                                "<textarea class=\"form-control\" rows=\"1\" id=\"picname"+count+"\" readonly></textarea>" +
+                            "</div>" +
+                            "<div class=\"col-md-3\">" +
+                                "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;\">Browse" +
+                                    "<input id=\"pic"+count+"\" type=\"file\" name=\"newfile\" style=\"display: none;\" onchange=\"setNameImg(this.value, "+count+");\">" +
+                                "</label>" +
+                            "</div>" +
+                        "</div>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<div class=\"row\">" +
+                            "<div class=\"col-md-9\">" +
+                                "<textarea class=\"form-control\" rows=\"1\" id=\"logoname"+count+"\" readonly></textarea>" +
+                            "</div>" +
+                            "<div class=\"col-md-3\">" +
+                                    "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;\">Browse" +
+                                    "<input id=\"logo"+count+"\" type=\"file\" name=\"newfile\" style=\"display: none;\" onchange=\"setNameLogo(this.value, "+count+");\">" +
+                                    "</label>" +
+                            "</div>" +
+                        "</div>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                            "<h4 style=\"color:#52D291\"><strong>DESCRIPTION</strong></h4>" +
+                            "<div></div>" +
+                            "<label>Please provide a brief description of your collection. Description can include information such as: general location, types of badges to expect, purpose, etc.</label>" +
+                            "<textarea class=\"form-control\" rows=\"6\" id=\"description"+count+"\"></textarea>" +
+                            "<div style=\"padding: 15px\"></div>" +
+                    "</div>" +
+                "</div>";
+
+
+
+        $("#badgeContainer").append(panel);
+        $("#badgeContainer").append(collapseable);
+        count++;
+    }
+}
+
+function myMap(element) {
+    var mapCanvas = document.getElementById('map'+element);
+    var myCenter=new google.maps.LatLng(47.67509743551929,-117.36024856567383);
+    var mapOptions = {center: myCenter, zoom: 13};
+    var map = new google.maps.Map(mapCanvas, mapOptions);
+    google.maps.event.addListener(map, 'click', function(event) {
+        placeMarker(map, event.latLng, element);
+    });
+    google.maps.event.trigger(map, 'resize');
+}
+
+function placeMarker(map, location, element) {
+    var marker = new google.maps.Marker({
+        position: location,
+        map: map
+    });
+    var tempLoc = String(location).substring(1,String(location).length-2).split(",");
+    document.getElementById('lat'+element).value = tempLoc[0];
+    document.getElementById('long'+element).value = tempLoc[1].substring(1,tempLoc[1].length-1);
+    //alert(String(location).split(",")[0]);
+    var infowindow = new google.maps.InfoWindow({
+        content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
+    });
+    infowindow.open(map,marker);
+}

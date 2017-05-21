@@ -1,6 +1,7 @@
 {% extends "base.twig" %}
 
 {% block content %}
+<script src="/js/awards.js"></script>
     <div class="container">
         <h1>ASSIGN YOUR AWARD</h1>
         <div class="row">
@@ -18,6 +19,47 @@
                 <div style="padding: 15px"></div>
 				<label><small>Click to enter a pin on the map or enter the latitude and longitude for the award location.</small></label>
 				<div style="padding: 10px"></div>
+				<div id="map" style="width:500px;height:500px;"></div>
+				<script>
+					function myMap() {
+					var mapCanvas = document.getElementById("map");
+					var mapOptions = {
+					center: new google.maps.LatLng(47.67509743551929,-117.36024856567383),
+					zoom: 10};
+					var map = new google.maps.Map(mapCanvas, mapOptions);
+					google.maps.event.addListener(map, 'click', function(event) {
+					placeMarker(map, event.latLng);
+					});
+					google.maps.event.trigger(map, 'resize');
+					}
+					
+					function placeMarker(map, location) {
+					var marker = new google.maps.Marker({
+					position: location,
+					map: map
+					});
+					var tempLoc = String(location).substring(1,String(location).length-2).split(",");
+					document.getElementById('lat').value = tempLoc[0];
+					document.getElementById('long').value = tempLoc[1].substring(1,tempLoc[1].length-1);
+					//alert(String(location).split(",")[0]);
+					var infowindow = new google.maps.InfoWindow({
+						content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
+					});
+						infowindow.open(map,marker);
+					}
+				</script>
+				<script async defer
+					src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAueqfdhE5KaeiKc1qZjNeyBvVbvNrY9bU&callback=myMap">
+				</script>
+				<div style="padding: 15px"></div>
+				<label style="color:#52D291"> -or- </label>
+				<div class="ui-grid-a">
+				<div data-role = "fieldcontain" class = "ui-hide-label ui-block-a">
+					<input type="text" name="lat" id="latitude" value="" placeholder="Latitude"/>
+					<input type="text" name="long" id="longitude" value="" placeholder="Longitude"/>
+				</div>
+				</div>
+				<div style="padding: 15px"></div> 
                 <h4 style="color:#52D291"><strong>TERMS AND CONDITIONS (optional)</strong></h4>
                 <div></div>
                 <label>If any terms or conditions apply to the award or to the collection of the award, please state or describe them below.</label> 

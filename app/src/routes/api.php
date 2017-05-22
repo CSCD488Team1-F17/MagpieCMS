@@ -573,12 +573,12 @@
 	$app->post('/add/awards', function(Request $request){
 		$cid =(int)$request->getParam("cid");
 		$name = $request->getParam("name");
-		//$lat = $request->getParam("latitude");
-		//$long = $request->getParam("longitude");
+		$lat = $request->getParam("latitude");
+		$long = $request->getParam("longitude");
 		$optionalConditions = $request->getParam("optionalConditions");
 		$conn = connect_db();	
-		$stmt = $conn->prepare("INSERT INTO Awards (CID, Name, optionalConditions) VALUES (?, ?, ?);");//add long/lat
-		$stmt->execute([$cid, $name, $optionalConditions]);//add long/lat
+		$stmt = $conn->prepare("INSERT INTO Awards (CID, Name, Latitude, Longitude, optionalConditions) VALUES (?, ?, ?, ?, ?);");
+		$stmt->execute([$cid, $name, $lat, $long, $optionalConditions]);
 		$conn = null;
 	});
 ?>

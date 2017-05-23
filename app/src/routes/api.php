@@ -113,13 +113,15 @@
     });
 
     $app->get('/api/landmark/{lid}', function (Request $request, Response $response){
+        $ara = array();
         $conn = connect_db();
         $lid = (int)$request->getAttribute('lid');
-        $stmt = $conn->prepare("SELECT * FROM Landmarks WHERE LID = ?;");
-        $stmt->execute([$lid]);
+        $stmt = $conn->prepare("SELECT DISTINCT * FROM Landmarks INNER JOIN LandmarkDescription ON LandmarkDescription.DesID = Landmarks.DescID AND Landmarks.LID = ? AND LandmarkDescription.LID = ?;");
+        $stmt->execute([$lid, $lid]);
         while($row = $stmt->fetch()) {
-            echo json_encode($row);
+            array_push($ara, $row);
         }
+        echo json_encode($ara);
         $conn = null;
     });
 
@@ -127,7 +129,7 @@
         $ara = array();
         $conn = connect_db();
         $wid = (int)$request->getAttribute('wid');
-        $stmt = $conn->prepare("SELECT * FROM Landmarks INNER JOIN CollectionLandmarks ON CollectionLandmarks.LandmarkID = Landmarks.LID WHERE CollectionLandmarks.CollectionID = ?;");
+        $stmt = $conn->prepare("SELECT * FROM Landmarks LEFT JOIN LandmarkDescription ON LandmarkDescription.DesID = Landmarks.DescID INNER JOIN CollectionLandmarks ON CollectionLandmarks.LandmarkID = Landmarks.LID WHERE CollectionLandmarks.CollectionID = ?;");
         $stmt->execute([$wid]);
         while($row = $stmt->fetch()) {
             array_push($ara, $row);

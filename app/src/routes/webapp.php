@@ -100,7 +100,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $allGetVars = $request->getQueryParams();
         if (!array_key_exists('code', $allGetVars)) {
@@ -122,7 +122,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $json = $request->getBody();
         $data = json_decode($json, true);

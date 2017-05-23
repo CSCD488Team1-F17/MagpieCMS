@@ -148,7 +148,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $payload = $client->verifyIdToken($id_token);
         if ($payload) {
@@ -186,7 +186,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $payload = $client->verifyIdToken($id_token);
         if ($payload) {
@@ -255,7 +255,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $payload = $client->verifyIdToken($id_token);
         if ($payload) {
@@ -330,7 +330,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $payload = $client->verifyIdToken($id_token);
         if ($payload) {
@@ -421,7 +421,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $payload = $client->verifyIdToken($idToken);
         if ($payload) {

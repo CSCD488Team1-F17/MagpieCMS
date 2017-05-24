@@ -60,7 +60,7 @@
         </div>
         <div class="row">
             <div class="col-md-4">
-                <button id="btn-prev" class="btn btn-default btn-md pull-right" style="border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;">Previous</button>  
+                <button id="btn-prev" onClick="window.location.href = '/collections'" class="btn btn-default btn-md pull-right" style="border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;">Previous</button>  
             </div>
             <div class="col-md-4 text-center">
                 <button class="btn btn-default btn-md" style="border-radius: 17px; background: #52D291; padding-left: 40px; padding-right: 40px;" id="btn-save">Save</button> 
@@ -99,7 +99,36 @@
                     contentType: false,
                     processData: false,
                     success:function(data){
-                        window.location.href = "/landmarks/" + (parseInt(cid) + 1);
+                        window.location.href = "/collections";
+                    }
+                });
+            });
+        </script>
+
+        <script>
+            $(document).on('click', '#btn-next', function(){
+                var name = $("#name").val();
+				var abbreviation = $("#abbreviation").val();
+                var summary = $("#summary").val();
+                var numBadge = $("#badgeq").val();
+                var ordered = $(".orderCollection:checked").val();
+                var cid = {{ cid|json_encode|raw}};
+                var form = $('form')[0]; 
+                var formData = new FormData(form);
+                formData.append("cid", cid);
+                formData.append("name", name);
+				formData.append("abbreviation", abbreviation);
+                formData.append("summary", summary);
+                formData.append("numBadge", numBadge);
+                formData.append("ordered", ordered);
+                $.ajax({
+                    url:'/edit/collection',
+                    type:'post',
+                    data:formData,
+                    contentType: false,
+                    processData: false,
+                    success:function(data){
+                        window.location.href = "/landmarks/" + (parseInt(cid));
                     }
                 });
             });

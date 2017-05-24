@@ -21,10 +21,13 @@
 
         return $view;
     };
+    
+    $container['renderer'] = function ($c) {
+        $settings = $c->get('settings')['renderer'];
+        return new Slim\Views\PhpRenderer($settings['template_path']);
+    };
 
     //Load stuff
-    require 'dbconnection.php';
-    require 'dependencies.php';
     require 'routes/routes.php';
 
     //Run the app

@@ -2,10 +2,10 @@
 
     return (object) array(
         'server' => 'localhost',
-        'username' => 'magpiehu_admin',
+        'username' => 'root',
         'password' => '',
-        'database' => 'magpiehu_cmsdb',
-        'credentialsFile' => dirname(__FILE__, 1) . '/client_secrets.json',
+        'database' => 'magpie',
+        'credentialsFile' => dirname(__FILE__, 1) . '/client_secret.json',
         
     );
 

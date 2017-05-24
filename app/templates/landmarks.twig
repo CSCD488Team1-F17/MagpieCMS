@@ -40,8 +40,8 @@
     </script>
     <div class="container" id="badgeContainer">
         <h1>BUILD YOUR BADGES</h1>
-        <div>These badges will belong to the collection with cid = {{cid}}</div>
-        <div>Number of badges in the database is {{numBadge}}</div>
+        <!--<div>These badges will belong to the collection with cid = {{cid}}</div>
+        <div>Number of badges in the database is {{numBadge}}</div>-->
     </div>
     <div class="container">
         <div class="panel panel-default">
@@ -64,7 +64,7 @@
         $( document ).ready(function() {
             $('.collapse').on('hidden.bs.collapse', function () {
                 var id = this.id;
-                alert(id);
+                //alert(id);
                 var name = $("#name" + this.id).val();
                 var description = $("#description" + this.id).val();
                 var lat = $("#lat" + this.id).val();
@@ -86,7 +86,7 @@
                 formData.append("description", description);
 
                 if(lids[this.id] != -1){
-                    alert("closed");
+                    //alert("closed");
                     $.ajax({
                         url:'/database/landmark/update/' + lids[id],
                         type:'post',

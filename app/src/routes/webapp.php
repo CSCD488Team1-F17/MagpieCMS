@@ -100,7 +100,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $allGetVars = $request->getQueryParams();
         if (!array_key_exists('code', $allGetVars)) {
@@ -122,7 +122,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $json = $request->getBody();
         $data = json_decode($json, true);
@@ -235,5 +235,10 @@
         } else {
             echo "hey!";
         }
-	});	
+	});
+
+	$app->get('/awards/{cid}', function(Request $request, Response $response, $args){
+		$cid = (int)$request->getAttribute('cid');
+        return authCheck('awards.twig', $this, $request, $response, ['cid'=> $cid]);
+    });
 ?>

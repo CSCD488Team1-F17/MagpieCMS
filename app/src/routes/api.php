@@ -150,7 +150,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $payload = $client->verifyIdToken($id_token);
         if ($payload) {
@@ -188,7 +188,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $payload = $client->verifyIdToken($id_token);
         if ($payload) {
@@ -257,7 +257,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $payload = $client->verifyIdToken($id_token);
         if ($payload) {
@@ -332,7 +332,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $payload = $client->verifyIdToken($id_token);
         if ($payload) {
@@ -423,7 +423,7 @@
         $client = new Google_Client();
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
-        $client->addScope(openid);
+        $client->addScope('openid');
 
         $payload = $client->verifyIdToken($idToken);
         if ($payload) {
@@ -571,4 +571,16 @@
         $stmt = $conn->prepare("UPDATE LandmarkDescription SET Description = ? WHERE LID = ? AND CID = ?");
         $stmt->execute([$description, (int)$request->getAttribute("lid"), $cid]);
     });
+	
+	$app->post('/add/awards', function(Request $request){
+		$cid =(int)$request->getParam("cid");
+		$name = $request->getParam("name");
+		$lat = $request->getParam("latitude");
+		$long = $request->getParam("longitude");
+		$optionalConditions = $request->getParam("optionalConditions");
+		$conn = connect_db();	
+		$stmt = $conn->prepare("INSERT INTO Awards (CID, Name, Latitude, Longitude, optionalConditions) VALUES (?, ?, ?, ?, ?);");
+		$stmt->execute([$cid, $name, $lat, $long, $optionalConditions]);
+		$conn = null;
+	});
 ?>

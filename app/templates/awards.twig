@@ -6,12 +6,12 @@
         <div class="row">
             <div class="col-md-1"></div>
             <div class="col-md-6">
-                <h4 style="color:#52D291"><strong>AWARD NAME</strong></h4>
+                <h4 style="color:#40AAF2"><strong>AWARD NAME</strong></h4>
                 <div></div>
                 <label>What will be awarded to scavengers who complete the collection?</label> 
                 <textarea class="form-control" rows="1" id="name"></textarea>
                 <div style="padding: 15px"></div>
-                <h4 style="color:#52D291"><strong>LOCATION</strong></h4>
+                <h4 style="color:#40AAF2"><strong>LOCATION</strong></h4>
                 <div></div>
                 <label>What is the name of the place that scavengers need to visit to collect their awards?</label> 
                 <textarea class="form-control" rows="1" id="locationName"></textarea>
@@ -60,7 +60,7 @@
 					src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAueqfdhE5KaeiKc1qZjNeyBvVbvNrY9bU&callback=myMap">
 				</script>
 				<div style="padding: 5px"></div>
-				<label style="color:#52D291; font-size:18px; margin-left:170px;"> -or- </label>
+				<label style="color:#40AAF2; font-size:18px; margin-left:170px;"> -or- </label>
 				<div style="padding:5px"></div>
 				<div class="ui-grid-a">
 				<div data-role = "fieldcontain" class = "ui-hide-label ui-block-a">
@@ -69,7 +69,7 @@
 				</div>
 				</div>
 				<div style="padding: 15px"></div>
-                <h4 style="color:#52D291"><strong>TERMS AND CONDITIONS (optional)</strong></h4>
+                <h4 style="color:#40AAF2"><strong>TERMS AND CONDITIONS (optional)</strong></h4>
                 <div></div>
                 <label>If any terms or conditions apply to the award or to the collection of the award, please state or describe them below.</label> 
                 <textarea class="form-control" rows="6" id="optionalConditions"></textarea>
@@ -79,13 +79,13 @@
         </div>
         <div class="row">
             <div class="col-md-4">
-                <button id="btn-prev" class="btn btn-default btn-md pull-right" style="border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;">Previous</button>  
+                <button id="btn-prev" onClick="window.location.href = '/landmarks/' + {{cid}}" class="btn btn-default btn-md pull-right" style="border-radius: 17px; background: #40AAF2; padding-left: 30px; padding-right: 30px;">Previous</button>  
             </div>
             <div class="col-md-4 text-center">
-                <button class="btn btn-default btn-md" style="border-radius: 17px; background: #52D291; padding-left: 40px; padding-right: 40px;" id="btn-save">Save</button> 
+                <button class="btn btn-default btn-md" style="border-radius: 17px; background: #40AAF2; padding-left: 40px; padding-right: 40px;" id="btn-save">Save</button> 
             </div>
             <div class="col-md-4">
-                <button class="btn btn-default btn-md pull-left" style="border-radius: 17px; background: #52D291; padding-left: 40px; padding-right: 40px;" id="btn-next">Next</button>
+                <button class="btn btn-default btn-md pull-left" onClick="window.location.href = '/collections'" style="border-radius: 17px; background: #40AAF2; padding-left: 40px; padding-right: 40px;" id="btn-next">Next</button>
             </div>
         </div>
         <div style="padding: 30px"></div>

@@ -31,12 +31,17 @@ img
 
 .jumbotron
 {
-	  background: url(../img/MagpieOld.png) no-repeat center center;
-    background-color: #000000;
-	  background-size: contain;
-		height: 128px; 
-		width: 100%;
-		margin-bottom: 0px
+	width:100%;
+	height:128px;
+	top:0;
+	left:0;
+    z-index: -1; 
+    margin-bottom: 0px;
+    background-size: cover;
+    border: none;
+    background: #40AAF2;
+    background: url('../img/BHwhite02.png') no-repeat center center, linear-gradient(to right, #4055F2, #50D2B4);	
+	background-size: contain;
 }
 
 

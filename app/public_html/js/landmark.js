@@ -1,6 +1,6 @@
 var count = 1;
 var lids = {};
-function append(){
+function append(cid){
     var panel = "<div class=\"panel panel-default\">" +
                 "<div class=\"panel-body text-center\" style=\"background-color: #40AAF2\" data-toggle=\"collapse\" data-target=#"+ count +">Badge "+count+"</div>" +
             "</div>";
@@ -31,29 +31,35 @@ function append(){
                             "</div>" +
                         "</div>" +
                         "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>IMAGE</strong></h4>" +
+                        "<div></div>" +
+                        "<label>Upload a photograph of the item scavengers are looking for.</label>" +
                         "<div class=\"row\">" +
                             "<div class=\"col-md-9\">" +
                                 "<textarea class=\"form-control\" rows=\"1\" id=\"picname"+count+"\" readonly></textarea>" +
                             "</div>" +
                             "<div class=\"col-md-3\">" +
-                                "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;\">Browse" +
-                                    "<input id=\"pic"+count+"\" type=\"file\" name=\"newfile\" style=\"display: none;\" onchange=\"setNameImg(this.value);\">" +
+                                "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #40AAF2; padding-left: 30px; padding-right: 30px;\">Browse" +
+                                    "<input id=\"pic"+count+"\" type=\"file\" name=\"newfile\" style=\"display: none;\" onchange=\"setNameImg(this.value, "+count+");\">" +
                                 "</label>" +
                             "</div>" +
                         "</div>" +
                         "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>BADGE ICON</strong></h4>" +
+                        "<div></div>" +
+                        "<label>Upload a PNG icon to represent this item or location.</label>" +
                         "<div class=\"row\">" +
                             "<div class=\"col-md-9\">" +
                                 "<textarea class=\"form-control\" rows=\"1\" id=\"logoname"+count+"\" readonly></textarea>" +
                             "</div>" +
                             "<div class=\"col-md-3\">" +
-                                    "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;\">Browse" +
-                                    "<input id=\"logo"+count+"\" type=\"file\" name=\"newfile\" style=\"display: none;\" onchange=\"setNameLogo(this.value);\">" +
+                                    "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #40AAF2; padding-left: 30px; padding-right: 30px;\">Browse" +
+                                    "<input id=\"logo"+count+"\" type=\"file\" name=\"newfile\" style=\"display: none;\" onchange=\"setNameLogo(this.value, "+count+");\">" +
                                     "</label>" +
                             "</div>" +
                         "</div>" +
                         "<div style=\"padding: 15px\"></div>" +
-                            "<h4 style=\"color:#52D291\"><strong>DESCRIPTION</strong></h4>" +
+                            "<h4 style=\"color:#40AAF2\"><strong>DESCRIPTION</strong></h4>" +
                             "<div></div>" +
                             "<label>Please provide a brief description of your collection. Description can include information such as: general location, types of badges to expect, purpose, etc.</label>" +
                             "<textarea class=\"form-control\" rows=\"6\" id=\"description"+count+"\"></textarea>" +
@@ -62,7 +68,12 @@ function append(){
                 "</div>";
     $("#badgeContainer").append(panel);
     $("#badgeContainer").append(collapseable);
+    myMap(count);
     count++;
+    $('.collapse').on('shown.bs.collapse', function () {
+        myMap(this.id);
+    });
+    upload(cid);
 }
 
 function onLoad(num){
@@ -97,29 +108,35 @@ function onLoad(num){
                             "</div>" +
                         "</div>" +
                         "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>IMAGE</strong></h4>" +
+                        "<div></div>" +
+                        "<label>Upload a photograph of the items scavengers are looking for.</label>" +
                         "<div class=\"row\">" +
                             "<div class=\"col-md-9\">" +
                                 "<textarea class=\"form-control\" rows=\"1\" id=\"picname"+count+"\" readonly></textarea>" +
                             "</div>" +
                             "<div class=\"col-md-3\">" +
-                                "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;\">Browse" +
+                                "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #40AAF2; padding-left: 30px; padding-right: 30px;\">Browse" +
                                     "<input id=\"pic"+count+"\" type=\"file\" name=\"newfile\" style=\"display: none;\" onchange=\"setNameImg(this.value, "+count+");\">" +
                                 "</label>" +
                             "</div>" +
                         "</div>" +
                         "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>BADGE ICON</strong></h4>" +
+                        "<div></div>" +
+                        "<label>Upload a PNG icon to represent this item or location.</label>" +
                         "<div class=\"row\">" +
                             "<div class=\"col-md-9\">" +
                                 "<textarea class=\"form-control\" rows=\"1\" id=\"logoname"+count+"\" readonly></textarea>" +
                             "</div>" +
                             "<div class=\"col-md-3\">" +
-                                    "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;\">Browse" +
+                                    "<label class=\"btn btn-default btn-file\" style=\"border-radius: 17px; background: #40AAF2; padding-left: 30px; padding-right: 30px;\">Browse" +
                                     "<input id=\"logo"+count+"\" type=\"file\" name=\"newfile\" style=\"display: none;\" onchange=\"setNameLogo(this.value, "+count+");\">" +
                                     "</label>" +
                             "</div>" +
                         "</div>" +
                         "<div style=\"padding: 15px\"></div>" +
-                            "<h4 style=\"color:#52D291\"><strong>DESCRIPTION</strong></h4>" +
+                            "<h4 style=\"color:#40AAF2\"><strong>DESCRIPTION</strong></h4>" +
                             "<div></div>" +
                             "<label>Please provide a brief description of your collection. Description can include information such as: general location, types of badges to expect, purpose, etc.</label>" +
                             "<textarea class=\"form-control\" rows=\"6\" id=\"description"+count+"\"></textarea>" +
@@ -159,4 +176,57 @@ function placeMarker(map, location, element) {
         content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
     });
     infowindow.open(map,marker);
+}
+
+function upload(cid){
+    $('.collapse').on('hidden.bs.collapse', function () {
+                var id = this.id;
+                //alert(id);
+                var name = $("#name" + this.id).val();
+                var description = $("#description" + this.id).val();
+                var lat = $("#lat" + this.id).val();
+                var long = $("#long" + this.id).val();
+                var file1 = $("#pic" + this.id)[0].files[0];
+                var file2 = $("#logo" + this.id)[0].files[0];
+                var file1name = $("#picname" + this.id).val();
+                var file2name = $("#logoname" + this.id).val();
+                var cid = cid;
+                //var form = $('form')[0];
+                //var formData = new FormData(form);
+                var formData = new FormData();
+                formData.append("cid", cid);
+                formData.append("file1", file1, file1name);
+                formData.append("file2", file2, file2name);
+                formData.append("name", name);
+                formData.append("lat", lat);
+                formData.append("long", long);
+                formData.append("description", description);
+
+                if(lids[this.id] != -1){
+                    //alert("closed");
+                    $.ajax({
+                        url:'/database/landmark/update/' + lids[id],
+                        type:'post',
+                        data:formData,
+                        contentType: false,
+                        processData: false,
+                        success:function(data){
+                            alert("done");
+                        }
+                    });
+                }else{
+                    $.ajax({
+                        url:'/database/landmark',
+                        type:'post',
+                        data:formData,
+                        contentType: false,
+                        processData: false,
+                        success:function(data){
+                            alert(data);
+                            alert(id);
+                            lids[id] = data;
+                        }
+                    });
+                }
+            });
 }

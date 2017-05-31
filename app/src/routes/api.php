@@ -27,7 +27,7 @@
             $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
         }
     });
-	
+
 	$app->post('/upload/images/collection', function ($request, $response, $args) {
         $files = $request->getUploadedFiles();
         if (empty($files['newfile'])) {
@@ -206,7 +206,7 @@
                 $uid = $output['UserID'];
                 $stmt = $conn->prepare("SELECT CollectionID FROM UserCollectionInprogress WHERE UserID = ?;");
                 $stmt->execute([$uid]);
-                
+
                 $collections = array();
                 while($row = $stmt->fetch()) {
                     $cid = $row['CollectionID'];
@@ -239,7 +239,7 @@
             error_log(print_r("Sending back a 300", TRUE));
             return $response->withStatus(300);
         }
-        
+
         $conn = null;
         return $response->withStatus(200);
     });
@@ -275,7 +275,7 @@
                 $uid = $output['UserID'];
                 $stmt = $conn->prepare("SELECT CollectionID FROM UserCollectionInprogress WHERE UserID = ?;");
                 $stmt->execute([$uid]);
-                
+
                 $array = array();
                 while($row = $stmt->fetch()) {
                     $cid = $row['CollectionID'];
@@ -315,7 +315,7 @@
             error_log(print_r("Sending back a 300", TRUE));
             return $response->withStatus(300);
         }
-        
+
         $conn = null;
         return $response->withStatus(200);
     });
@@ -399,6 +399,7 @@
 	$app->post('/database/collection', function(Request $request){
 		$cid =(int)$request->getParam("cid") + 1;
 		$name = $request->getParam("name");
+        $abv = $request->getParam("abv");
 		$description = $request->getParam("summary");
 		$numberOfLandmarks = (int)$request->getParam("numBadge");
         $isOrdered = (int)$request->getParam("ordered");
@@ -408,9 +409,9 @@
         error_log(print_r($idToken, TRUE));
 
 		$conn = connect_db();
-		$stmt = $conn->prepare("INSERT INTO Collections (Name, Description, NumberOfLandMarks, IsOrder) VALUES (?, ?, ?, ?)");
+		$stmt = $conn->prepare("INSERT INTO Collections (Name, Abbreviation, Description, NumberOfLandMarks, IsOrder) VALUES (?, ?, ?, ?, ?)");
 
-		$stmt->execute([$name, $description, $numberOfLandmarks, $isOrdered]);
+		$stmt->execute([$name, $abv, $description, $numberOfLandmarks, $isOrdered]);
 
         $picID = (int)superbadgeUpload($request);
         $stmt = $conn->prepare("UPDATE Collections SET PicID = ? WHERE CID = ?");
@@ -446,7 +447,7 @@
 
         echo("success");
 	});
-	
+
 	$app->post('/edit/collection', function(Request $request){
 		$cid =(int)$request->getParam("cid");
 		$name = $request->getParam("name");
@@ -455,8 +456,8 @@
 		$numberOfLandmarks = (int)$request->getParam("numBadge");
         $isOrder = (int)$request->getParam("ordered");
 		//$picID
-		
-		$conn = connect_db();	
+
+		$conn = connect_db();
 		$stmt = $conn->prepare("UPDATE Collections SET Name = ?, Abbreviation = ?, Description = ?, NumberOfLandmarks = ?, IsOrder = ? WHERE CID = ?");
 		$stmt->execute([$name, $abbreviation, $description, $numberOfLandmarks, $isOrder, $cid]);
 	});
@@ -571,16 +572,25 @@
         $stmt = $conn->prepare("UPDATE LandmarkDescription SET Description = ? WHERE LID = ? AND CID = ?");
         $stmt->execute([$description, (int)$request->getAttribute("lid"), $cid]);
     });
-	
+
 	$app->post('/add/awards', function(Request $request){
 		$cid =(int)$request->getParam("cid");
 		$name = $request->getParam("name");
 		$lat = $request->getParam("latitude");
 		$long = $request->getParam("longitude");
 		$optionalConditions = $request->getParam("optionalConditions");
-		$conn = connect_db();	
+		$conn = connect_db();
 		$stmt = $conn->prepare("INSERT INTO Awards (CID, Name, Latitude, Longitude, optionalConditions) VALUES (?, ?, ?, ?, ?);");
 		$stmt->execute([$cid, $name, $lat, $long, $optionalConditions]);
 		$conn = null;
 	});
+
+    $app->post('/collection/newBadge', function($request){
+        $numBadge = (int)$request->getParam("numBadge") + 1;
+        $cid = (int)$request->getParam("cid");
+        $conn = connect_db();
+        $stmt = $conn->prepare("UPDATE Collections SET NumberOfLandmarks = ? WHERE CID = ?");
+        $stmt->execute([$numBadge, $cid]);
+        $conn = null;
+    });
 ?>

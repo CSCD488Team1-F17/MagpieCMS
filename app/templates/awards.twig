@@ -92,6 +92,7 @@
         <script>
             $(document).on('click', '#btn-next', function(){
                 var name = $("#name").val();
+				var locationName = $("#locationName").val();
 				var optionalConditions = $("#optionalConditions").val();
                 var cid = {{ cid|json_encode|raw}};
 				var latitude = $("#latitude").val();
@@ -100,6 +101,7 @@
                 var formData = new FormData(form);
                 formData.append("cid", cid);
                 formData.append("name", name);
+				formData.append("locationName", locationName);
 				formData.append("latitude", latitude);
 				formData.append("longitude", longitude);
 				formData.append("optionalConditions", optionalConditions);

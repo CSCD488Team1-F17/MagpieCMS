@@ -113,13 +113,15 @@
     });
 
     $app->get('/api/landmark/{lid}', function (Request $request, Response $response){
+        $ara = array();
         $conn = connect_db();
         $lid = (int)$request->getAttribute('lid');
-        $stmt = $conn->prepare("SELECT * FROM Landmarks WHERE LID = ?;");
-        $stmt->execute([$lid]);
+        $stmt = $conn->prepare("SELECT DISTINCT * FROM Landmarks INNER JOIN LandmarkDescription ON LandmarkDescription.DesID = Landmarks.DescID AND Landmarks.LID = ? AND LandmarkDescription.LID = ?;");
+        $stmt->execute([$lid, $lid]);
         while($row = $stmt->fetch()) {
-            echo json_encode($row);
+            array_push($ara, $row);
         }
+        echo json_encode($ara);
         $conn = null;
     });
 
@@ -127,7 +129,7 @@
         $ara = array();
         $conn = connect_db();
         $wid = (int)$request->getAttribute('wid');
-        $stmt = $conn->prepare("SELECT * FROM Landmarks INNER JOIN CollectionLandmarks ON CollectionLandmarks.LandmarkID = Landmarks.LID WHERE CollectionLandmarks.CollectionID = ?;");
+        $stmt = $conn->prepare("SELECT * FROM Landmarks LEFT JOIN LandmarkDescription ON LandmarkDescription.DesID = Landmarks.DescID INNER JOIN CollectionLandmarks ON CollectionLandmarks.LandmarkID = Landmarks.LID WHERE CollectionLandmarks.CollectionID = ?;");
         $stmt->execute([$wid]);
         while($row = $stmt->fetch()) {
             array_push($ara, $row);
@@ -397,6 +399,7 @@
 	$app->post('/database/collection', function(Request $request){
 		$cid =(int)$request->getParam("cid") + 1;
 		$name = $request->getParam("name");
+		$abbreviation = $request->getParam("abbreviation");
 		$description = $request->getParam("summary");
 		$numberOfLandmarks = (int)$request->getParam("numBadge");
         $isOrdered = (int)$request->getParam("ordered");
@@ -406,9 +409,9 @@
         error_log(print_r($idToken, TRUE));
 
 		$conn = connect_db();
-		$stmt = $conn->prepare("INSERT INTO Collections (Name, Description, NumberOfLandMarks, IsOrder) VALUES (?, ?, ?, ?)");
+		$stmt = $conn->prepare("INSERT INTO Collections (Name, Abbreviation, Description, NumberOfLandMarks, IsOrder) VALUES (?, ?, ?, ?, ?)");
 
-		$stmt->execute([$name, $description, $numberOfLandmarks, $isOrdered]);
+		$stmt->execute([$name, $abbreviation, $description, $numberOfLandmarks, $isOrdered]);
 
         $picID = (int)superbadgeUpload($request);
         $stmt = $conn->prepare("UPDATE Collections SET PicID = ? WHERE CID = ?");
@@ -573,12 +576,13 @@
 	$app->post('/add/awards', function(Request $request){
 		$cid =(int)$request->getParam("cid");
 		$name = $request->getParam("name");
+		$locationName = $request->getParam("locationName");
 		$lat = $request->getParam("latitude");
 		$long = $request->getParam("longitude");
 		$optionalConditions = $request->getParam("optionalConditions");
 		$conn = connect_db();	
-		$stmt = $conn->prepare("INSERT INTO Awards (CID, Name, Latitude, Longitude, optionalConditions) VALUES (?, ?, ?, ?, ?);");
-		$stmt->execute([$cid, $name, $lat, $long, $optionalConditions]);
+		$stmt = $conn->prepare("INSERT INTO Awards (CID, Name, LocationName, Latitude, Longitude, optionalConditions) VALUES (?, ?, ?, ?, ?, ?);");
+		$stmt->execute([$cid, $name, $locationName, $lat, $long, $optionalConditions]);
 		$conn = null;
 	});
 ?>

@@ -12,61 +12,80 @@
 
         return $connection;
     }
+	
+	function badgeUpload($request, $lid) {
+			$files = $request->getUploadedFiles();
+			$cid = (int)$request->getParam('cid');
+			
+			if(empty($files['file1'])) {
+				throw new Exception('Expected a newfile');
+			}	
+			
+			if(empty($files['file2'])) {
+				throw new Exception('Expected a second newfile');
+			}
+			
+			$newfile1 = $files['file1'];
+			$newfile2 = $files['file2'];
+			
+			//File storage updates
+			if($newfile1->getError() === UPLOAD_ERR_OK) {
+				$uploadFileName1 = $newfile1->getClientFilename();
+				$uploadFileName2 = $newfile2->getClientFilename();
+				if(mkdir("../Resources/Images/$cid") && mkdir("../Resources/Images/$cid"))
+				$newfile1->moveTo("../Resources/Images/$cid/$uploadFileName1");
+				$newfile2->moveTo("../Resources/Images/$cid/$uploadFileName2");
+			}
+			
+			//Database updates
+			$cid = $request->getParam('cid');
+			$imageType = substr($uploadFileName1, strpos($uploadFileName1, ".")+1);
+			$conn = connect_db();
+			$stmt = $conn->prepare("INSERT INTO LandmarkImages (CID, FileLocation, ImageType) Values (?, ?, ?)");
+			$stmt->execute([$cid, $uploadFileName1, $imageType]);
+			
+			$stmt = $conn->prepare("UPDATE Landmarks SET Badge = ? WHERE LID = ?;");
+			$stmt->execute($uploadFileName2, $lid);
+			
+			$output = $conn->query("SELECT MAX(PicID) AS MaxPid FROM LandmarkImages;");
+			while($row = $output->fetch()) {
+				$pid = $row['MaxPid'];
+			}
+			
+			$conn = null;
+			return $pid;
+	}
+	
+	function superbadgeUpload($request){
+        $files = $request->getUploadedFiles();
+        $cid = (int)$request->getParam("cid");
+        $pid;
+        if (empty($files['newfile'])) {
+            throw new Exception('Expected a newfile');
+        }
+
+		//File storage updates
+        $newfile = $files['newfile'];
+        if ($newfile->getError() === UPLOAD_ERR_OK) {
+            $uploadFileName = $newfile->getClientFilename();
+            $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
+        }
+
+		//Database updates
+		$imageType = substr($uploadFileName, strpos($uploadFileName, ".")+1);
+        $conn = connect_db();
+        $stmt = $conn->prepare("INSERT INTO CollectionImages (CID, FileLocation, ImageType) Values (?, ?, ?)");
+		$stmt->execute([$cid, $uploadFileName, $imageType]);
+        $output = $conn->query("SELECT MAX(PicID) AS MaxPid FROM CollectionImages;");
+        while($row = $output->fetch()) {
+            $pid = $row['MaxPid'];
+        }
+        $conn = null;
+
+        return $pid;
+    }
 
     //api calls
-
-    $app->post('/upload', function ($request, $response, $args) {
-        $files = $request->getUploadedFiles();
-        if (empty($files['newfile'])) {
-            throw new Exception('Expected a newfile');
-        }
-        $newfile = $files['newfile'];
-		$cid = $request->getParam('CID');
-        if ($newfile->getError() === UPLOAD_ERR_OK) {
-            $uploadFileName = $newfile->getClientFilename();
-            $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
-        }
-    });
-
-	$app->post('/upload/images/collection', function ($request, $response, $args) {
-        $files = $request->getUploadedFiles();
-        if (empty($files['newfile'])) {
-            throw new Exception('Expected a newfile');
-        }
-
-        $newfile = $files['newfile'];
-		$cid = $request->getParam('CID');
-        if ($newfile->getError() === UPLOAD_ERR_OK) {
-            $uploadFileName = $newfile->getClientFilename();
-            $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
-        }
-		$imageType = substr($uploadFileName, strpos($uploadFileName, ".")+1);
-		$conn = connect_db();
-		$stmt = $conn->prepare("INSERT INTO CollectionImages (CID, FileLocation, ImageType) Values (?, ?, ?)");
-		$stmt->execute([$cid, $uploadFileName, $imageType]);
-		$conn = null;
-    });
-
-	$app->post('/upload/images/landmark', function ($request, $response, $args) {
-        $files = $request->getUploadedFiles();
-        if (empty($files['newfile'])) {
-            throw new Exception('Expected a newfile');
-        }
-
-        $newfile = $files['newfile'];
-		$lid = $request->getParam('LID');
-		$cid = $request->getParam('CID');
-        if ($newfile->getError() === UPLOAD_ERR_OK) {
-            $uploadFileName = $newfile->getClientFilename();
-            $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");//unsure here
-        }
-		$imageType = substr($uploadFileName, strpos($uploadFileName, ".")+1);
-		$conn = connect_db();
-		$stmt = $conn->prepare("INSERT INTO LandmarkImages (CID, FileLocation, ImageType) Values (?, ?, ?)");
-		$stmt->execute([$cid, $uploadFileName, $imageType]);
-		$conn = null;
-    });
-
     $app->get('/api/collection/', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();
@@ -397,7 +416,7 @@
 
 
 	$app->post('/database/collection', function(Request $request){
-		$cid =(int)$request->getParam("cid") + 1;
+		$cid =(int)$request->getParam("cid");
 		$name = $request->getParam("name");
         $abv = $request->getParam("abv");
 		$description = $request->getParam("summary");
@@ -469,7 +488,7 @@
 
     function superbadgeUpload($request){
         $files = $request->getUploadedFiles();
-        $cid = (int)$request->getParam("cid") + 1;
+        $cid = (int)$request->getParam("cid");
         $pid;
         if (empty($files['newfile'])) {
             throw new Exception('Expected a newfile');

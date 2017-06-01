@@ -112,6 +112,18 @@
         $conn = null;
     });
 
+    $app->post('/api/collection/approve', function (Request $request, Response $response){
+        $conn = connect_db();
+        $json = $request->getBody();
+        $data = json_decode($json, true);
+
+        $cid = $data['cid'];
+        error_log(print_r($cid, TRUE));
+        $stmt = $conn->prepare("UPDATE Collections SET Status = ? WHERE CID = ?");
+        $stmt->execute([2, $cid]);
+        $conn = null;
+    });
+
     $app->get('/api/landmark/{lid}', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();

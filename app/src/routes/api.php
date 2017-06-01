@@ -498,32 +498,6 @@
     //     $id_token = $params['id_token'];
 	// });
 
-    function superbadgeUpload($request){
-        $files = $request->getUploadedFiles();
-        $cid = (int)$request->getParam("cid");
-        $pid;
-        if (empty($files['newfile'])) {
-            throw new Exception('Expected a newfile');
-        }
-
-        $newfile = $files['newfile'];
-        if ($newfile->getError() === UPLOAD_ERR_OK) {
-            $uploadFileName = $newfile->getClientFilename();
-            $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
-        }
-
-        $conn = connect_db();
-        $stmt = $conn->prepare("INSERT INTO CollectionImages (CID, FileLocation) VALUES (?,?)");
-        $stmt->execute([$cid, $uploadFileName]);
-        $output = $conn->query("SELECT MAX(PicID) AS MaxPid FROM CollectionImages;");
-        while($row = $output->fetch()) {
-            $pid = $row['MaxPid'];
-        }
-        $conn = null;
-
-        return $pid;
-    }
-
 	$app->get('/images/collection/{cid}', function (Request $request, Response $response){
         $conn = connect_db();
 		$cid = (int)$request->getAttribute('cid');

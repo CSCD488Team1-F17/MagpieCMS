@@ -114,7 +114,7 @@ function displayCollectionsAdmin(collections){
                     $('<button>', {
                         "class": "btn",
                         text: "Edit",
-                        onClick: "location.href='/edit?" + encodeURI(collections[i].CID) + "';"
+                        onClick: "location.href='/edit/" + encodeURI(collections[i].CID) + "';"
                     }),
                     $('<button>', {
                         "class": "btn-success",

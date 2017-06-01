@@ -73,37 +73,40 @@
         </script>
         <script>
             $(document).on('click', '#btn-next', function(){
-                //var cid = parseInt($('#cid').text());
-                var abv = $("#abbreviation").val();
-                var name = $("#name").val();
-                var summary = $("#summary").val();
-                var numBadge = $("#badgeq").val();
-                var ordered = $(".orderCollection:checked").val();
-                var cid = {{ cid|json_encode|raw}};
-                var form = $('form')[0];
-                var formData = new FormData(form);
-                formData.append("cid", cid);
-                formData.append("name", name);
-                formData.append("abv", abv);
-                formData.append("summary", summary);
-                formData.append("numBadge", numBadge);
-                formData.append("ordered", ordered);
+                var r = confirm("Are you finished with your changes?");
+                if (r == true){
+                    //var cid = parseInt($('#cid').text());
+                    var abv = $("#abbreviation").val();
+                    var name = $("#name").val();
+                    var summary = $("#summary").val();
+                    var numBadge = $("#badgeq").val();
+                    var ordered = $(".orderCollection:checked").val();
+                    var cid = {{ cid|json_encode|raw}};
+                    var form = $('form')[0];
+                    var formData = new FormData(form);
+                    formData.append("cid", cid);
+                    formData.append("name", name);
+                    formData.append("abv", abv);
+                    formData.append("summary", summary);
+                    formData.append("numBadge", numBadge);
+                    formData.append("ordered", ordered);
 
-                var GoogleUser = GoogleAuth.currentUser.get();
-                var id_token = GoogleUser.getAuthResponse().id_token;
+                    var GoogleUser = GoogleAuth.currentUser.get();
+                    var id_token = GoogleUser.getAuthResponse().id_token;
 
-                formData.append("idToken", id_token);
+                    formData.append("idToken", id_token);
 
-                $.ajax({
-                    url:'/database/collection',
-                    type:'post',
-                    data:formData,
-                    contentType: false,
-                    processData: false,
-                    success:function(data){
-                        window.location.href = "/landmarks/" + (parseInt(cid) + 1);
-                    }
-                });
+                    $.ajax({
+                        url:'/database/collection',
+                        type:'post',
+                        data:formData,
+                        contentType: false,
+                        processData: false,
+                        success:function(data){
+                            window.location.href = "/landmarks/" + (parseInt(cid) + 1);
+                        }
+                    });
+                }
             });
         </script>
     </div>

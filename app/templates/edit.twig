@@ -107,30 +107,33 @@
 
         <script>
             $(document).on('click', '#btn-next', function(){
-                var name = $("#name").val();
-				var abbreviation = $("#abbreviation").val();
-                var summary = $("#summary").val();
-                var numBadge = $("#badgeq").val();
-                var ordered = $(".orderCollection:checked").val();
-                var cid = {{ cid|json_encode|raw}};
-                var form = $('form')[0]; 
-                var formData = new FormData(form);
-                formData.append("cid", cid);
-                formData.append("name", name);
-				formData.append("abbreviation", abbreviation);
-                formData.append("summary", summary);
-                formData.append("numBadge", numBadge);
-                formData.append("ordered", ordered);
-                $.ajax({
-                    url:'/edit/collection',
-                    type:'post',
-                    data:formData,
-                    contentType: false,
-                    processData: false,
-                    success:function(data){
-                        window.location.href = "/landmarks/" + (parseInt(cid));
-                    }
-                });
+                var r = confirm("Are you finished with your changes?");
+                if (r == true){
+                    var name = $("#name").val();
+                    var abbreviation = $("#abbreviation").val();
+                    var summary = $("#summary").val();
+                    var numBadge = $("#badgeq").val();
+                    var ordered = $(".orderCollection:checked").val();
+                    var cid = {{ cid|json_encode|raw}};
+                    var form = $('form')[0]; 
+                    var formData = new FormData(form);
+                    formData.append("cid", cid);
+                    formData.append("name", name);
+                    formData.append("abbreviation", abbreviation);
+                    formData.append("summary", summary);
+                    formData.append("numBadge", numBadge);
+                    formData.append("ordered", ordered);
+                    $.ajax({
+                        url:'/edit/collection',
+                        type:'post',
+                        data:formData,
+                        contentType: false,
+                        processData: false,
+                        success:function(data){
+                            window.location.href = "/landmarks/" + (parseInt(cid));
+                        }
+                    });
+                }
             });
         </script>
     </div>

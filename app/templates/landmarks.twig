@@ -116,6 +116,8 @@
                 var file2 = $("#logo" + this.id)[0].files[0];
                 var file1name = $("#picname" + this.id).val();
                 var file2name = $("#logoname" + this.id).val();
+                var creator = $("#creator" + id).val();
+                var url = $("#url" + id).val();
                 var cid = {{ cid|json_encode|raw}};
                 //var form = $('form')[0];
                 //var formData = new FormData(form);
@@ -127,6 +129,8 @@
                 formData.append("lat", lat);
                 formData.append("long", long);
                 formData.append("description", description);
+                formData.append("creator", creator);
+                formData.append("url", url);
 
                 if(lids[this.id] != -1){
                     //alert("closed");

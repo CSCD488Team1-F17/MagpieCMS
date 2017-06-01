@@ -59,11 +59,21 @@ function append(cid){
                             "</div>" +
                         "</div>" +
                         "<div style=\"padding: 15px\"></div>" +
-                            "<h4 style=\"color:#40AAF2\"><strong>DESCRIPTION</strong></h4>" +
-                            "<div></div>" +
-                            "<label>Please provide a brief description of your collection. Description can include information such as: general location, types of badges to expect, purpose, etc.</label>" +
-                            "<textarea class=\"form-control\" rows=\"6\" id=\"description"+count+"\"></textarea>" +
-                            "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>DESCRIPTION</strong></h4>" +
+                        "<div></div>" +
+                        "<label>Please provide a brief description of your collection. Description can include information such as: general location, types of badges to expect, purpose, etc.</label>" +
+                        "<textarea class=\"form-control\" rows=\"6\" id=\"description"+count+"\"></textarea>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>OBJECT CREATOR(optional)</strong></h4>" +
+                        "<div></div>" +
+                        "<label>If the location or item where created by an artist, architect, etc, here's your chance to give them the credit they deserve.</label>" +
+                        "<textarea class=\"form-control\" rows=\"1\" id=\"creator"+count+"\"></textarea>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>URL(optional)</strong></h4>" +
+                        "<div></div>" +
+                        "<label>Which site can the users visit to learn more about this object or location.</label>" +
+                        "<textarea class=\"form-control\" rows=\"1\" id=\"url"+count+"\"></textarea>" +
+                        "<div style=\"padding: 15px\"></div>" +
                     "</div>" +
                 "</div>";
     $("#badgeContainer").append(panel);
@@ -136,11 +146,21 @@ function onLoad(num){
                             "</div>" +
                         "</div>" +
                         "<div style=\"padding: 15px\"></div>" +
-                            "<h4 style=\"color:#40AAF2\"><strong>DESCRIPTION</strong></h4>" +
-                            "<div></div>" +
-                            "<label>Please provide a brief description of your collection. Description can include information such as: general location, types of badges to expect, purpose, etc.</label>" +
-                            "<textarea class=\"form-control\" rows=\"6\" id=\"description"+count+"\"></textarea>" +
-                            "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>DESCRIPTION</strong></h4>" +
+                        "<div></div>" +
+                        "<label>Please provide a brief description of your collection. Description can include information such as: general location, types of badges to expect, purpose, etc.</label>" +
+                        "<textarea class=\"form-control\" rows=\"6\" id=\"description"+count+"\"></textarea>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>OBJECT CREATOR(optional)</strong></h4>" +
+                        "<div></div>" +
+                        "<label>If the location or item where created by an artist, architect, etc, here's your chance to give them the credit they deserve.</label>" +
+                        "<textarea class=\"form-control\" rows=\"1\" id=\"creator"+count+"\"></textarea>" +
+                        "<div style=\"padding: 15px\"></div>" +
+                        "<h4 style=\"color:#40AAF2\"><strong>URL(optional)</strong></h4>" +
+                        "<div></div>" +
+                        "<label>Which site can the users visit to learn more about this object or location.</label>" +
+                        "<textarea class=\"form-control\" rows=\"1\" id=\"url"+count+"\"></textarea>" +
+                        "<div style=\"padding: 15px\"></div>" +
                     "</div>" +
                 "</div>";
 
@@ -190,9 +210,9 @@ function upload(cid){
                 var file2 = $("#logo" + this.id)[0].files[0];
                 var file1name = $("#picname" + this.id).val();
                 var file2name = $("#logoname" + this.id).val();
+                var creator = $("#creator" + id).val();
+                var url = $("#url" + id).val();
                 var cid = cid;
-                //var form = $('form')[0];
-                //var formData = new FormData(form);
                 var formData = new FormData();
                 formData.append("cid", cid);
                 formData.append("file1", file1, file1name);
@@ -201,9 +221,10 @@ function upload(cid){
                 formData.append("lat", lat);
                 formData.append("long", long);
                 formData.append("description", description);
+                formData.append("creator", creator);
+                formData.append("url", url);
 
                 if(lids[this.id] != -1){
-                    //alert("closed");
                     $.ajax({
                         url:'/database/landmark/update/' + lids[id],
                         type:'post',
@@ -211,7 +232,6 @@ function upload(cid){
                         contentType: false,
                         processData: false,
                         success:function(data){
-                            alert("done");
                         }
                     });
                 }else{
@@ -222,8 +242,6 @@ function upload(cid){
                         contentType: false,
                         processData: false,
                         success:function(data){
-                            alert(data);
-                            alert(id);
                             lids[id] = data;
                         }
                     });

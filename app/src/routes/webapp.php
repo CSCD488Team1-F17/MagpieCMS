@@ -241,4 +241,24 @@
 		$cid = (int)$request->getAttribute('cid');
         return authCheck('awards.twig', $this, $request, $response, ['cid'=> $cid]);
     });
+	
+	$app->get('/edit/awards/{cid}', function(Request $request, Response $response, $args){
+		$cid = (int)$request->getAttribute('cid');
+		//if(canEdit($response, $cid)) {
+			$conn = connect_db();
+			$stmt = $conn->prepare("SELECT * FROM Awards WHERE CID = ?;");
+			$stmt->execute([$cid]);
+			$result = $stmt->fetch();
+			$name = $result['Name'];
+			$locationName = $result['LocationName'];
+			$long = $result['Longitude'];
+			$lat = $result['Latitude'];
+			$optionalConditions = $result['optionalConditions'];
+			
+			return authCheck('editAwards.twig', $this, $request, $response, ['cid'=> $cid, 'name'=>$name, 'locationName'=>$locationName, 'longitude'=>$long, 
+			'latitude'=>$lat, 'optionalConditions'=>$optionalConditions]);
+		//} else {
+		//		echo "hey!";
+		//}		
+    });
 ?>

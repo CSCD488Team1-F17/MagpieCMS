@@ -470,8 +470,8 @@
 		//$picID
 
 		$conn = connect_db();
-		$stmt = $conn->prepare("UPDATE Collections SET Name = ?, Abbreviation = ?, Description = ?, NumberOfLandmarks = ?, IsOrder = ? WHERE CID = ?");
-		$stmt->execute([$name, $abbreviation, $description, $numberOfLandmarks, $isOrder, $cid]);
+		$stmt = $conn->prepare("UPDATE Collections SET Name = ?, Abbreviation = ?, Description = ?, NumberOfLandmarks = ?, IsOrder = ?, Status = ? WHERE CID = ?");
+		$stmt->execute([$name, $abbreviation, $description, $numberOfLandmarks, $isOrder, 1, $cid]);
 	});
 
     // $app->post('/database/user', function(Request $request){

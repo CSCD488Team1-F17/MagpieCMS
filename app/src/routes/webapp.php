@@ -158,7 +158,7 @@
         $conn = connect_db();
         $output = $conn->query("SELECT MAX(CID) AS MaxCid FROM Collections;");
         while($row = $output->fetch()) {
-            $cid = $row['MaxCid'];
+            $cid = $row['MaxCid'] + 1;
         }
         $conn = null;
 

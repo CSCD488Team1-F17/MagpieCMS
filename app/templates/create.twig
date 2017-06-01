@@ -95,17 +95,16 @@
                     var id_token = GoogleUser.getAuthResponse().id_token;
 
                     formData.append("idToken", id_token);
-
-                    $.ajax({
-                        url:'/database/collection',
-                        type:'post',
-                        data:formData,
-                        contentType: false,
-                        processData: false,
-                        success:function(data){
-                            window.location.href = "/landmarks/" + (parseInt(cid) + 1);
-                        }
-                    });
+                $.ajax({
+                    url:'/database/collection',
+                    type:'post',
+                    data:formData,
+                    contentType: false,
+                    processData: false,
+                    success:function(data){
+                        window.location.href = "/landmarks/" + (parseInt(cid));
+                    }
+                });
                 }
             });
         </script>

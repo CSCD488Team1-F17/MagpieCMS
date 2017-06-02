@@ -199,9 +199,11 @@ function placeMarker(map, location, element) {
 }
 
 function upload(cid){
-    $('.collapse').on('hidden.bs.collapse', function () {
+    $('.collapse').on('click', function(){
+        var valid = validate(this.id);
+        if (valid){
+            $('.collapse').on('hidden.bs.collapse', function () {
                 var id = this.id;
-                //alert(id);
                 var name = $("#name" + this.id).val();
                 var description = $("#description" + this.id).val();
                 var lat = $("#lat" + this.id).val();
@@ -223,7 +225,6 @@ function upload(cid){
                 formData.append("description", description);
                 formData.append("creator", creator);
                 formData.append("url", url);
-
                 if(lids[this.id] != -1){
                     $.ajax({
                         url:'/database/landmark/update/' + lids[id],
@@ -247,4 +248,28 @@ function upload(cid){
                     });
                 }
             });
+        }
+    });
+
+}
+
+function validate(id){
+    if($("#name" + id).val() == ""){
+        alert("You have not entered a NAME!");
+        return false;
+    }else if($("#lat" + id).val() == "" || $("#long" + id).val() == ""){
+        alert("You have an invalid LATITUDE or LONGITUDE");
+        return false;
+    }else if($("#description" + id).val() == ""){
+        alert("You have not entered a DESCRIPTION!");
+        return false;
+    }else if(!($("#picname" + id).val().endsWith(".png"))){
+        alert("You have to upload a .png image file!");
+        return false;
+    }else if(!($("#logoname" + id).val().endsWith(".png"))){
+        alert("You have to upload a .png badge file!");
+        return false;
+    }else{
+        return true;
+    }
 }

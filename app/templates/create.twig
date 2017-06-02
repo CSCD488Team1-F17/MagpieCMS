@@ -75,38 +75,65 @@
             $(document).on('click', '#btn-next', function(){
                 var r = confirm("Are you finished with your changes?");
                 if (r == true){
-                    //var cid = parseInt($('#cid').text());
-                    var abv = $("#abbreviation").val();
-                    var name = $("#name").val();
-                    var summary = $("#summary").val();
-                    var numBadge = $("#badgeq").val();
-                    var ordered = $(".orderCollection:checked").val();
-                    var cid = {{ cid|json_encode|raw}};
-                    var form = $('form')[0];
-                    var formData = new FormData(form);
-                    formData.append("cid", cid);
-                    formData.append("name", name);
-                    formData.append("abv", abv);
-                    formData.append("summary", summary);
-                    formData.append("numBadge", numBadge);
-                    formData.append("ordered", ordered);
+                    var valid = validate();
+                    if(valid){
+                        //var cid = parseInt($('#cid').text());
+                        var abv = $("#abbreviation").val();
+                        var name = $("#name").val();
+                        var summary = $("#summary").val();
+                        var numBadge = $("#badgeq").val();
+                        var ordered = $(".orderCollection:checked").val();
+                        var cid = {{ cid|json_encode|raw}};
+                        var form = $('form')[0];
+                        var formData = new FormData(form);
+                        formData.append("cid", cid);
+                        formData.append("name", name);
+                        formData.append("abv", abv);
+                        formData.append("summary", summary);
+                        formData.append("numBadge", numBadge);
+                        formData.append("ordered", ordered);
 
-                    var GoogleUser = GoogleAuth.currentUser.get();
-                    var id_token = GoogleUser.getAuthResponse().id_token;
+                        var GoogleUser = GoogleAuth.currentUser.get();
+                        var id_token = GoogleUser.getAuthResponse().id_token;
 
-                    formData.append("idToken", id_token);
-                $.ajax({
-                    url:'/database/collection',
-                    type:'post',
-                    data:formData,
-                    contentType: false,
-                    processData: false,
-                    success:function(data){
-                        window.location.href = "/landmarks/" + (parseInt(cid));
+                        formData.append("idToken", id_token);
+                        $.ajax({
+                            url:'/database/collection',
+                            type:'post',
+                            data:formData,
+                            contentType: false,
+                            processData: false,
+                            success:function(data){
+                                window.location.href = "/landmarks/" + (parseInt(cid));
+                            }
+                        });
                     }
-                });
                 }
             });
+
+            function validate(){
+                if($("#name").val() == ""){
+                    alert("You have not entered a NAME!");
+                    return false;
+                }else if($("#abbreviation").val() == ""){
+                    alert("You have not entered a ABBREVIATION!");
+                    return false;
+                }else if($("#summary").val() == ""){
+                    alert("You have not entered a SUMMARY!");
+                    return false;
+                }else if($("#badgeq").val() == ""){
+                    alert("You have not entered a BADGE QUANTITY!");
+                    return false;
+                }else if(parseInt($("#badgeq").val()) < 3){
+                    alert("You have to have 3 or more BADGES!");
+                    return false;
+                }else if(!($("#superbadge").val().endsWith(".png"))){
+                    alert("You have to upload a .png file!");
+                    return false;
+                }else{
+                    return true;
+                }
+            }
         </script>
     </div>
 {% endblock %}

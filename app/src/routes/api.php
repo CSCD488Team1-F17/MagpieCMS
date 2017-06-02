@@ -32,7 +32,7 @@
 			if($newfile1->getError() === UPLOAD_ERR_OK) {
 				$uploadFileName1 = $newfile1->getClientFilename();
 				$uploadFileName2 = $newfile2->getClientFilename();
-				if(mkdir("../Resources/Images/$cid") && mkdir("../Resources/Images/$cid"))
+				mkdir("../Resources/Images/$cid");//create directory if you can
 				$newfile1->moveTo("../Resources/Images/$cid/$uploadFileName1");
 				$newfile2->moveTo("../Resources/Images/$cid/$uploadFileName2");
 			}
@@ -68,6 +68,7 @@
         $newfile = $files['newfile'];
         if ($newfile->getError() === UPLOAD_ERR_OK) {
             $uploadFileName = $newfile->getClientFilename();
+			mkdir("../Resources/Images/$cid");//create directory if you can
             $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
         }
 
@@ -558,6 +559,10 @@
 
         $stmt = $conn->prepare("INSERT INTO LandmarkDescription (DesID, LID, CID, Description) VALUES (?, ?, ?, ?)");
         $stmt->execute([$desid, $lid, $cid, $description]);
+		
+		$pid = (int)badgeUpload($request, $lid);
+		$stmt = $conn->prepare("UPDATE Landmarks SET PicID = ? WHERE LID = ?;");
+		$stmt->execute([$pid, $lid]);
 
         $conn = null;
         return $lid;

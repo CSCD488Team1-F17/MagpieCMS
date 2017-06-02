@@ -29,19 +29,18 @@
 			$newfile2 = $files['file2'];
 			
 			//File storage updates
-			if($newfile1->getError() === UPLOAD_ERR_OK) {
+			if($newfile1->getError() === UPLOAD_ERR_OK && $newfile2->getError() === UPLOAD_ERR_OK) {
 				$uploadFileName1 = $newfile1->getClientFilename();
 				$uploadFileName2 = $newfile2->getClientFilename();
-				if(mkdir("../Resources/Images/$cid") && mkdir("../Resources/Images/$cid"))
+				mkdir("../Resources/Images/$cid");//create directory if you can
 				$newfile1->moveTo("../Resources/Images/$cid/$uploadFileName1");
 				$newfile2->moveTo("../Resources/Images/$cid/$uploadFileName2");
 			}
 			
 			//Database updates
-			$cid = $request->getParam('cid');
 			$imageType = substr($uploadFileName1, strpos($uploadFileName1, ".")+1);
 			$conn = connect_db();
-			$stmt = $conn->prepare("INSERT INTO LandmarkImages (CID, FileLocation, ImageType) Values (?, ?, ?)");
+			$stmt = $conn->prepare("INSERT INTO LandmarkImages (FileLocation, ImageType) Values (?, ?)");
 			$stmt->execute([$cid, $uploadFileName1, $imageType]);
 			
 			$stmt = $conn->prepare("UPDATE Landmarks SET Badge = ? WHERE LID = ?;");
@@ -68,6 +67,7 @@
         $newfile = $files['newfile'];
         if ($newfile->getError() === UPLOAD_ERR_OK) {
             $uploadFileName = $newfile->getClientFilename();
+			mkdir("../Resources/Images/$cid");//create directory if you can
             $newfile->moveTo("../Resources/Images/$cid/$uploadFileName");
         }
 
@@ -558,6 +558,10 @@
 
         $stmt = $conn->prepare("INSERT INTO LandmarkDescription (DesID, LID, CID, Description) VALUES (?, ?, ?, ?)");
         $stmt->execute([$desid, $lid, $cid, $description]);
+		
+		$pid = (int)badgeUpload($request, $lid);
+		$stmt = $conn->prepare("UPDATE Landmarks SET PicID = ? WHERE LID = ?;");
+		$stmt->execute([$pid, $lid]);
 
         $conn = null;
         return $lid;

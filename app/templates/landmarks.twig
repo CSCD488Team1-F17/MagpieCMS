@@ -8,6 +8,7 @@
         var desc = JSON.parse({{landmarkDesc|json_encode|raw}});
         $(document).ready(function () {
             onLoad({{numBadge}});
+            //If badges are being sent from the backend this function will populate them
             if({{incomingData}} == 1){
                 var existing = {{numCount}};
                 for(i = 1; i <= existing; i++){
@@ -15,13 +16,13 @@
                     $("#name" + i).val(data[i-1].Name);
                     $("#long" + i).val(data[i-1].Longitude);
                     $("#lat" + i).val(data[i-1].Latitude);
+                    $("#creator" + i).val(data[i-1].Creator);
+                    $("#url" + i).val(data[i-1].InfoLink);
                     for(var x in desc){
-                        //console.log(x);
                         if(desc[x].LID == data[i-1].LID){
                             $("#description" + i).val(desc[x].Description);
                         }
                     }
-                    //$("#description" + i).val(desc[])
                 }
                 for(i=existing+1; i <= {{numBadge}}; i++){
                     lids[i] = -1;
@@ -33,6 +34,7 @@
             }
         });
         $( document ).ready(function() {
+            //loads the google map when a div is opened
             $('.collapse').on('shown.bs.collapse', function () {
                 myMap(this.id);
             });
@@ -76,6 +78,7 @@
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9s43u7fI0DPFQ07aCYMuHGl47S3_-JtU&callback=myMap"></script>
     <script>
+        //set the image names
         function setNameImg(name, id){
             var fileName = name.substr(name.lastIndexOf("\\")+1, name.length);
             document.getElementById("picname" + id).value = fileName;
@@ -112,9 +115,11 @@
                 }
             });
 
+            //Makes a post call to the backend to put landmark into the database
             $('.collapse').on('hidden.bs.collapse', function () {
+                var valid = validate(this.id);
+
                 var id = this.id;
-                //alert(id);
                 var name = $("#name" + this.id).val();
                 var description = $("#description" + this.id).val();
                 var lat = $("#lat" + this.id).val();
@@ -125,9 +130,7 @@
                 var file2name = $("#logoname" + this.id).val();
                 var creator = $("#creator" + id).val();
                 var url = $("#url" + id).val();
-                var cid = {{ cid|json_encode|raw}};
-                //var form = $('form')[0];
-                //var formData = new FormData(form);
+                var cid = cid;
                 var formData = new FormData();
                 formData.append("cid", cid);
                 formData.append("file1", file1, file1name);
@@ -139,31 +142,29 @@
                 formData.append("creator", creator);
                 formData.append("url", url);
 
-                if(lids[this.id] != -1){
-                    //alert("closed");
-                    $.ajax({
-                        url:'/database/landmark/update/' + lids[id],
-                        type:'post',
-                        data:formData,
-                        contentType: false,
-                        processData: false,
-                        success:function(data){
-                            //alert("done");
-                        }
-                    });
-                }else{
-                    $.ajax({
-                        url:'/database/landmark',
-                        type:'post',
-                        data:formData,
-                        contentType: false,
-                        processData: false,
-                        success:function(data){
-                            //alert(data);
-                            //alert(id);
-                            lids[id] = data;
-                        }
-                    });
+                if (valid){
+                    if(lids[this.id] != -1){
+                        $.ajax({
+                            url:'/database/landmark/update/' + lids[id],
+                            type:'post',
+                            data:formData,
+                            contentType: false,
+                            processData: false,
+                            success:function(data){
+                            }
+                        });
+                    }else{
+                        $.ajax({
+                            url:'/database/landmark',
+                            type:'post',
+                            data:formData,
+                            contentType: false,
+                            processData: false,
+                            success:function(data){
+                                lids[id] = data;
+                            }
+                        });
+                    }
                 }
             });
         });

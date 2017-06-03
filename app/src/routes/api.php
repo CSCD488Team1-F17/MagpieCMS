@@ -12,22 +12,22 @@
 
         return $connection;
     }
-	
+
 	function badgeUpload($request, $lid) {
 			$files = $request->getUploadedFiles();
 			$cid = (int)$request->getParam('cid');
-			
+
 			if(empty($files['file1'])) {
 				throw new Exception('Expected a newfile');
-			}	
-			
+			}
+
 			if(empty($files['file2'])) {
 				throw new Exception('Expected a second newfile');
 			}
-			
+
 			$newfile1 = $files['file1'];
 			$newfile2 = $files['file2'];
-			
+
 			//File storage updates
 			if($newfile1->getError() === UPLOAD_ERR_OK && $newfile2->getError() === UPLOAD_ERR_OK) {
 				$uploadFileName1 = $newfile1->getClientFilename();
@@ -36,25 +36,25 @@
 				$newfile1->moveTo("../Resources/Images/$cid/$uploadFileName1");
 				$newfile2->moveTo("../Resources/Images/$cid/$uploadFileName2");
 			}
-			
+
 			//Database updates
 			$imageType = substr($uploadFileName1, strpos($uploadFileName1, ".")+1);
 			$conn = connect_db();
 			$stmt = $conn->prepare("INSERT INTO LandmarkImages (FileLocation, ImageType) Values (?, ?)");
 			$stmt->execute([$cid, $uploadFileName1, $imageType]);
-			
+
 			$stmt = $conn->prepare("UPDATE Landmarks SET Badge = ? WHERE LID = ?;");
 			$stmt->execute($uploadFileName2, $lid);
-			
+
 			$output = $conn->query("SELECT MAX(PicID) AS MaxPid FROM LandmarkImages;");
 			while($row = $output->fetch()) {
 				$pid = $row['MaxPid'];
 			}
-			
+
 			$conn = null;
 			return $pid;
 	}
-	
+
 	function superbadgeUpload($request){
         $files = $request->getUploadedFiles();
         $cid = (int)$request->getParam("cid");
@@ -86,7 +86,7 @@
     }
 
     //api calls
-	
+
 	/* Most of the /api/ calls are endpoints for android teams to get a hold of corresponding information */
     $app->get('/api/collection/', function (Request $request, Response $response){
         $ara = array();
@@ -99,11 +99,11 @@
         $conn = null;
     });
 
-    $app->get('/api/collection/{wid}', function (Request $request, Response $response){
+    $app->get('/api/collection/{cid}', function (Request $request, Response $response){
         $conn = connect_db();
-        $wid = (int)$request->getAttribute('wid');
+        $cid = (int)$request->getAttribute('cid');
         $stmt = $conn->prepare("SELECT * FROM Collections WHERE CID = ?;");
-        $stmt->execute([$wid]);
+        $stmt->execute([$cid]);
         $output = $stmt->fetch();
             echo json_encode($output);
         $conn = null;
@@ -158,12 +158,12 @@
         $conn = null;
     });
 
-    $app->get('/api/landmark/all/{wid}', function (Request $request, Response $response){
+    $app->get('/api/landmark/all/{cid}', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();
-        $wid = (int)$request->getAttribute('wid');
+        $cid = (int)$request->getAttribute('cid');
         $stmt = $conn->prepare("SELECT * FROM Landmarks LEFT JOIN LandmarkDescription ON LandmarkDescription.DesID = Landmarks.DescID INNER JOIN CollectionLandmarks ON CollectionLandmarks.LandmarkID = Landmarks.LID WHERE CollectionLandmarks.CollectionID = ?;");
-        $stmt->execute([$wid]);
+        $stmt->execute([$cid]);
         while($row = $stmt->fetch()) {
             array_push($ara, $row);
         }
@@ -415,21 +415,6 @@
         return $response->withJson($result);
     });
 
-	/* Outdated endpoint to pull images associated with collections. New method for pulling images is through the file compression method
-	   that distributes the images via ZIP */
-    $app->get('/image/logo/{wid}', function (Request $request, Response $response){
-        //$imgName = (string)$request->getAttribute('imageid');
-        $conn = connect_db();
-        $wid = (int)$request->getAttribute('wid');
-        $stmt = $conn->prepare("SELECT FileLocation FROM CollectionImages INNER JOIN Collections ON Collections.PicID = CollectionImages.PicID WHERE Collections.CID = ?;");
-        $stmt->execute([$wid]);
-        $result = $stmt->fetch();
-        $image = file_get_contents('../Resources/Images/' . $result['FileLocation']);
-        $response->write($image);
-        return $response->withHeader('Content-Type', 'image/png');
-        //echo $image;
-    });
-
 	/* This is the post route that gets triggered through the ajax in the create.twig page. This will take all the information in the form
 	   and store it in the database including the superbadge which is a call to the helper function above. */
 	$app->post('/database/collection', function(Request $request){
@@ -440,7 +425,6 @@
 		$numberOfLandmarks = (int)$request->getParam("numBadge");
         $isOrdered = (int)$request->getParam("ordered");
         $idToken = $request->getParam("idToken");
-		//$picID = (int)superbadgeUpload($request);
 
         error_log(print_r($idToken, TRUE));
 
@@ -499,7 +483,7 @@
 		$stmt->execute([$name, $abbreviation, $description, $numberOfLandmarks, $isOrder, 1, $cid]);
 	});
 
-	/* This function will check all nested files within a directory and compress all the images for distribution as a ZIP archive. We currently call the folder 
+	/* This function will check all nested files within a directory and compress all the images for distribution as a ZIP archive. We currently call the folder
 		that contains the associated images for a collection the CID for said collection. All associated images will reside in Resources/Images/CID and when called,
 		this function will return a zip with all of them it for the app team to use. */
 	$app->get('/images/collection/{cid}', function (Request $request, Response $response){
@@ -541,11 +525,13 @@
         $long = (double)$request->getParam("long");
         $lat = (double)$request->getParam("lat");
         $cid = (int)$request->getParam("cid");
+        $creator = $request->getParam("creator");
+        $url = $request->getParam("url");
         $description = $request->getParam("description");
 
         $conn = connect_db();
-        $stmt = $conn->prepare("INSERT INTO Landmarks (Name, Longitude, Latitude) VALUES (?, ?, ?)");
-        $stmt->execute([$name, $long, $lat]);
+        $stmt = $conn->prepare("INSERT INTO Landmarks (Name, Longitude, Latitude, Creator, InfoLink) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$name, $long, $lat, $creator, $url]);
 
         $lid;
         $output = $conn->query("SELECT MAX(LID) AS MaxLid FROM Landmarks;");
@@ -563,7 +549,7 @@
 
         $stmt = $conn->prepare("INSERT INTO LandmarkDescription (DesID, LID, CID, Description) VALUES (?, ?, ?, ?)");
         $stmt->execute([$desid, $lid, $cid, $description]);
-		
+
 		$pid = (int)badgeUpload($request, $lid);
 		$stmt = $conn->prepare("UPDATE Landmarks SET PicID = ? WHERE LID = ?;");
 		$stmt->execute([$pid, $lid]);
@@ -577,11 +563,13 @@
         $long = (double)$request->getParam("long");
         $lat = (double)$request->getParam("lat");
         $cid = (int)$request->getParam("cid");
+        $creator = $request->getParam("creator");
+        $url = $request->getParam("url");
         $description = $request->getParam("description");
 
         $conn = connect_db();
-        $stmt = $conn->prepare("UPDATE Landmarks SET Name = ?, Longitude = ?, Latitude = ? WHERE LID = ?");
-        $stmt->execute([$name, $long, $lat, (int)$request->getAttribute("lid")]);
+        $stmt = $conn->prepare("UPDATE Landmarks SET Name = ?, Longitude = ?, Latitude = ?, Creator = ?, InfoLink = ? WHERE LID = ?");
+        $stmt->execute([$name, $long, $lat, $creator, $url, (int)$request->getAttribute("lid")]);
 
         $stmt = $conn->prepare("UPDATE LandmarkDescription SET Description = ? WHERE LID = ? AND CID = ?");
         $stmt->execute([$description, (int)$request->getAttribute("lid"), $cid]);

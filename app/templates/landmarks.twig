@@ -8,6 +8,7 @@
         var desc = JSON.parse({{landmarkDesc|json_encode|raw}});
         $(document).ready(function () {
             onLoad({{numBadge}});
+            //If badges are being sent from the backend this function will populate them
             if({{incomingData}} == 1){
                 var existing = {{numCount}};
                 for(i = 1; i <= existing; i++){
@@ -15,13 +16,13 @@
                     $("#name" + i).val(data[i-1].Name);
                     $("#long" + i).val(data[i-1].Longitude);
                     $("#lat" + i).val(data[i-1].Latitude);
+                    $("#creator" + i).val(data[i-1].Creator);
+                    $("#url" + i).val(data[i-1].InfoLink);
                     for(var x in desc){
-                        //console.log(x);
                         if(desc[x].LID == data[i-1].LID){
                             $("#description" + i).val(desc[x].Description);
                         }
                     }
-                    //$("#description" + i).val(desc[])
                 }
                 for(i=existing+1; i <= {{numBadge}}; i++){
                     lids[i] = -1;
@@ -33,31 +34,43 @@
             }
         });
         $( document ).ready(function() {
+            //loads the google map when a div is opened
             $('.collapse').on('shown.bs.collapse', function () {
                 myMap(this.id);
             });
         });
     </script>
-    <div class="container" id="badgeContainer">
+    <div class="container">
         <h1>BUILD YOUR BADGES</h1>
-        <!--<div>These badges will belong to the collection with cid = {{cid}}</div>
-        <div>Number of badges in the database is {{numBadge}}</div>-->
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8" id="badgeContainer">
+
+            </div>
+            <div class="col-md-2"></div>
+        </div>
     </div>
     <div class="container">
-        <div class="panel panel-default">
-            <div class="panel-body text-center" style="background-color: #C8CDD5" onclick="append();">Add Another Badge</div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="panel panel-default">
+                    <div id="newBadge" class="panel-body text-center" style="background-color: #C8CDD5" onclick="append({{cid|json_encode|raw}});">Add Another Badge</div>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
         </div>
     </div>
 
     <div class="row">
             <div class="col-md-4">
-                <button id="btn-prev" onClick="window.location.href = '/edit/' + {{cid}}" class="btn btn-default btn-md pull-right" style="border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;">Previous</button>  
+                <button id="btn-prev" onClick="window.location.href = '/edit/' + {{cid}}" class="btn btn-default btn-md pull-right" style="border-radius: 17px; background: #52D291; padding-left: 30px; padding-right: 30px;">Previous</button>
             </div>
             <div class="col-md-4 text-center">
-                <button class="btn btn-default btn-md" style="border-radius: 17px; background: #52D291; padding-left: 40px; padding-right: 40px;" id="btn-save">Save</button> 
+                <button class="btn btn-default btn-md" style="border-radius: 17px; background: #52D291; padding-left: 40px; padding-right: 40px;" id="btn-save">Save</button>
             </div>
             <div class="col-md-4">
-                <button class="btn btn-default btn-md pull-left" onClick="window.location.href = '/awards/' + {{cid}}" style="border-radius: 17px; background: #52D291; padding-left: 40px; padding-right: 40px;" id="btn-next">Next</button>
+                <button class="btn btn-default btn-md pull-left" style="border-radius: 17px; background: #52D291; padding-left: 40px; padding-right: 40px;" id="btn-next">Next</button>
 
             </div>
         </div>
@@ -65,6 +78,7 @@
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9s43u7fI0DPFQ07aCYMuHGl47S3_-JtU&callback=myMap"></script>
     <script>
+        //set the image names
         function setNameImg(name, id){
             var fileName = name.substr(name.lastIndexOf("\\")+1, name.length);
             document.getElementById("picname" + id).value = fileName;
@@ -76,9 +90,36 @@
     </script>
     <script>
         $( document ).ready(function() {
+            $('#newBadge').on('click', function(){
+                var numBadge = {{numBadge}};
+                var cid = {{ cid|json_encode|raw}};
+                var formData = new FormData();
+                formData.append("cid", cid);
+                formData.append("numBadge", numBadge);
+                $.ajax({
+                        url:'/collection/newBadge',
+                        type:'post',
+                        data:formData,
+                        contentType: false,
+                        processData: false,
+                        success:function(data){
+                            //alert("done");
+                        }
+                });
+            });
+
+            $('#btn-next').on('click', function(){
+                var r = confirm("Are you finished with your changes?");
+                if (r == true){
+                    window.location.href = '/awards/' + {{cid}};
+                }
+            });
+
+            //Makes a post call to the backend to put landmark into the database
             $('.collapse').on('hidden.bs.collapse', function () {
+                var valid = validate(this.id);
+
                 var id = this.id;
-                //alert(id);
                 var name = $("#name" + this.id).val();
                 var description = $("#description" + this.id).val();
                 var lat = $("#lat" + this.id).val();
@@ -87,9 +128,9 @@
                 var file2 = $("#logo" + this.id)[0].files[0];
                 var file1name = $("#picname" + this.id).val();
                 var file2name = $("#logoname" + this.id).val();
-                var cid = {{ cid|json_encode|raw}};
-                //var form = $('form')[0];
-                //var formData = new FormData(form);
+                var creator = $("#creator" + id).val();
+                var url = $("#url" + id).val();
+                var cid = cid;
                 var formData = new FormData();
                 formData.append("cid", cid);
                 formData.append("file1", file1, file1name);
@@ -98,32 +139,32 @@
                 formData.append("lat", lat);
                 formData.append("long", long);
                 formData.append("description", description);
+                formData.append("creator", creator);
+                formData.append("url", url);
 
-                if(lids[this.id] != -1){
-                    //alert("closed");
-                    $.ajax({
-                        url:'/database/landmark/update/' + lids[id],
-                        type:'post',
-                        data:formData,
-                        contentType: false,
-                        processData: false,
-                        success:function(data){
-                            //alert("done");
-                        }
-                    });
-                }else{
-                    $.ajax({
-                        url:'/database/landmark',
-                        type:'post',
-                        data:formData,
-                        contentType: false,
-                        processData: false,
-                        success:function(data){
-                            //alert(data);
-                            //alert(id);
-                            lids[id] = data;
-                        }
-                    });
+                if (valid){
+                    if(lids[this.id] != -1){
+                        $.ajax({
+                            url:'/database/landmark/update/' + lids[id],
+                            type:'post',
+                            data:formData,
+                            contentType: false,
+                            processData: false,
+                            success:function(data){
+                            }
+                        });
+                    }else{
+                        $.ajax({
+                            url:'/database/landmark',
+                            type:'post',
+                            data:formData,
+                            contentType: false,
+                            processData: false,
+                            success:function(data){
+                                lids[id] = data;
+                            }
+                        });
+                    }
                 }
             });
         });

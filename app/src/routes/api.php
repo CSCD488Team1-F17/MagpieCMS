@@ -525,11 +525,13 @@
         $long = (double)$request->getParam("long");
         $lat = (double)$request->getParam("lat");
         $cid = (int)$request->getParam("cid");
+        $creator = $request->getParam("creator");
+        $url = $request->getParam("url");
         $description = $request->getParam("description");
 
         $conn = connect_db();
-        $stmt = $conn->prepare("INSERT INTO Landmarks (Name, Longitude, Latitude) VALUES (?, ?, ?)");
-        $stmt->execute([$name, $long, $lat]);
+        $stmt = $conn->prepare("INSERT INTO Landmarks (Name, Longitude, Latitude, Creator, InfoLink) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$name, $long, $lat, $creator, $url]);
 
         $lid;
         $output = $conn->query("SELECT MAX(LID) AS MaxLid FROM Landmarks;");
@@ -561,11 +563,13 @@
         $long = (double)$request->getParam("long");
         $lat = (double)$request->getParam("lat");
         $cid = (int)$request->getParam("cid");
+        $creator = $request->getParam("creator");
+        $url = $request->getParam("url");
         $description = $request->getParam("description");
 
         $conn = connect_db();
-        $stmt = $conn->prepare("UPDATE Landmarks SET Name = ?, Longitude = ?, Latitude = ? WHERE LID = ?");
-        $stmt->execute([$name, $long, $lat, (int)$request->getAttribute("lid")]);
+        $stmt = $conn->prepare("UPDATE Landmarks SET Name = ?, Longitude = ?, Latitude = ?, Creator = ?, InfoLink = ? WHERE LID = ?");
+        $stmt->execute([$name, $long, $lat, $creator, $url, (int)$request->getAttribute("lid")]);
 
         $stmt = $conn->prepare("UPDATE LandmarkDescription SET Description = ? WHERE LID = ? AND CID = ?");
         $stmt->execute([$description, (int)$request->getAttribute("lid"), $cid]);

@@ -173,6 +173,8 @@ function onLoad(num){
         count++;
     }
 }
+
+var marker;
 //function used to load the google map
 function myMap(element) {
     var mapCanvas = document.getElementById('map'+element);
@@ -186,10 +188,14 @@ function myMap(element) {
 }
 //function used by the google map to place a marker
 function placeMarker(map, location, element) {
-    var marker = new google.maps.Marker({
-        position: location,
-        map: map
-    });
+    if(marker){
+        marker.setPosition(location);
+    }else{
+        marker = new google.maps.Marker({
+            position: location,
+            map: map
+        });
+    }
     var tempLoc = String(location).substring(1,String(location).length-2).split(",");
     document.getElementById('lat'+element).value = tempLoc[0];
     document.getElementById('long'+element).value = tempLoc[1].substring(1,tempLoc[1].length-1);

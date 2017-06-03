@@ -16,6 +16,8 @@
                     $("#name" + i).val(data[i-1].Name);
                     $("#long" + i).val(data[i-1].Longitude);
                     $("#lat" + i).val(data[i-1].Latitude);
+                    $("#creator" + i).val(data[i-1].Creator);
+                    $("#url" + i).val(data[i-1].InfoLink);
                     for(var x in desc){
                         if(desc[x].LID == data[i-1].LID){
                             $("#description" + i).val(desc[x].Description);

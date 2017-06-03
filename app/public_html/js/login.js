@@ -1,3 +1,11 @@
+/*
+login.js
+
+This file takes care of all of the login functionality on the website.
+Unfortunately, much of this code is provided in different sections of Google's documentation without explanation.
+It is highly suggested to research this topic at Google's website: https://developers.google.com/identity/sign-in/web/sign-in
+*/
+
 var GoogleAuth;
 //Get base url
 var pathArray = location.href.split('/');

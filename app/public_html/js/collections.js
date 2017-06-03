@@ -1,7 +1,16 @@
+/*
+collections.js
+
+This file generates the collection view page. It makes several calls to the backend in order to fetch data from the database.
+*/
+
+//collectionsInit loaded when the page loads.
 function collectionsInit(){
     getUser();
 }
 
+//displayCollections does all of the work of injecting HTML. Accepts the collections converted from a JSON object.
+//Uses jQuery for HTML injection.
 function displayCollections(collections){
     var html = $("<table>").addClass("table table-striped");
     if(collections != null){
@@ -74,6 +83,7 @@ function displayCollections(collections){
     $('#collections').html(html);
 }
 
+//Does the same as above, but changes the buttons for the admin.
 function displayCollectionsAdmin(collections){
     var html = $("<table>").addClass("table table-striped");
     if(collections != null){
@@ -146,6 +156,7 @@ function displayCollectionsAdmin(collections){
     $('#collections').html(html);
 }
 
+//getUser gets the currently signed in user's ID from the database. Does so by sending an id_token to our /api/user/web endpoint.
 function getUser(){
     var auth2 = gapi.auth2.getAuthInstance();
     var googleUser = auth2.currentUser.get();
@@ -174,6 +185,7 @@ function getUser(){
     });
 }
 
+//getCollections get's collections created by the user with userID.
 function getCollections(userID){
     var obj = { 'UserID': userID };
     var json = JSON.stringify(obj);
@@ -195,6 +207,7 @@ function getCollections(userID){
     });
 }
 
+//onClickDisable our callback function for the button to disable a collection.
 function onClickDisable(cid){
     var obj = { 'cid': cid };
     var json = JSON.stringify(obj);
@@ -213,6 +226,7 @@ function onClickDisable(cid){
     });
 }
 
+//onClickEnable our callback function for the button to enable a collection.
 function onClickEnable(cid){
     var obj = { 'cid': cid };
     var json = JSON.stringify(obj);
@@ -231,6 +245,7 @@ function onClickEnable(cid){
     });
 }
 
+//onClickApprove our callback function for the button to approve a collection.
 function onClickApprove(cid){
     var obj = { 'cid': cid };
     var json = JSON.stringify(obj);

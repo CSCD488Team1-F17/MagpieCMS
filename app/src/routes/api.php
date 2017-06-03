@@ -86,6 +86,8 @@
     }
 
     //api calls
+	
+	/* Most of the /api/ calls are endpoints for android teams to get a hold of corresponding information */
     $app->get('/api/collection/', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();
@@ -178,7 +180,7 @@
 
         $config = require dirname(__FILE__, 2) . '/config.php';
 
-        $client = new Google_Client();
+        $client = new Google_Client(); //Composer is used to set up Google_Client() configuration stuff
         $client->setAuthConfig($config->credentialsFile);
         $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/oauth2callback');
         $client->addScope('openid');
@@ -413,6 +415,8 @@
         return $response->withJson($result);
     });
 
+	/* Outdated endpoint to pull images associated with collections. New method for pulling images is through the file compression method
+	   that distributes the images via ZIP */
     $app->get('/image/logo/{wid}', function (Request $request, Response $response){
         //$imgName = (string)$request->getAttribute('imageid');
         $conn = connect_db();
@@ -426,7 +430,8 @@
         //echo $image;
     });
 
-
+	/* This is the post route that gets triggered through the ajax in the create.twig page. This will take all the information in the form
+	   and store it in the database including the superbadge which is a call to the helper function above. */
 	$app->post('/database/collection', function(Request $request){
 		$cid =(int)$request->getParam("cid");
 		$name = $request->getParam("name");
@@ -479,6 +484,7 @@
         echo("success");
 	});
 
+	/* This is the post function for the edit.twig page and currently the suberbadge stuff is not implemented upon edit. */
 	$app->post('/edit/collection', function(Request $request){
 		$cid =(int)$request->getParam("cid");
 		$name = $request->getParam("name");
@@ -493,11 +499,9 @@
 		$stmt->execute([$name, $abbreviation, $description, $numberOfLandmarks, $isOrder, 1, $cid]);
 	});
 
-    // $app->post('/database/user', function(Request $request){
-    //     $params = $request->getParsedBody();
-    //     $id_token = $params['id_token'];
-	// });
-
+	/* This function will check all nested files within a directory and compress all the images for distribution as a ZIP archive. We currently call the folder 
+		that contains the associated images for a collection the CID for said collection. All associated images will reside in Resources/Images/CID and when called,
+		this function will return a zip with all of them it for the app team to use. */
 	$app->get('/images/collection/{cid}', function (Request $request, Response $response){
         $conn = connect_db();
 		$cid = (int)$request->getAttribute('cid');
@@ -531,6 +535,7 @@
 		->withHeader("Cache-Control", "no-store,no-cache");
     });
 
+	/* This is the post function that is invoked by the ajax in landmarks.twig and is used to insert badge information into the landmark associated tables. */
     $app->post('/database/landmark', function(Request $request) {
         $name = $request->getParam("name");
         $long = (double)$request->getParam("long");
@@ -582,6 +587,7 @@
         $stmt->execute([$description, (int)$request->getAttribute("lid"), $cid]);
     });
 
+	/* The post call invoked by the awards.twig page and is used for award information insertion. */
 	$app->post('/add/awards', function(Request $request){
 		$cid =(int)$request->getParam("cid");
 		$name = $request->getParam("name");
@@ -594,6 +600,7 @@
 		$conn = null;
 	});
 
+	/* The post call for additional badges to be added */
     $app->post('/collection/newBadge', function($request){
         $numBadge = (int)$request->getParam("numBadge") + 1;
         $cid = (int)$request->getParam("cid");

@@ -72,6 +72,7 @@
         	}
         </script>
         <script>
+            //Posts the create page form data to the backend then on success redirects to the badge page
             $(document).on('click', '#btn-next', function(){
                 var r = confirm("Are you finished with your changes?");
                 if (r == true){
@@ -110,7 +111,7 @@
                     }
                 }
             });
-
+            //Data validation function
             function validate(){
                 if($("#name").val() == ""){
                     alert("You have not entered a NAME!");

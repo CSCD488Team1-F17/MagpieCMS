@@ -8,6 +8,7 @@
         var desc = JSON.parse({{landmarkDesc|json_encode|raw}});
         $(document).ready(function () {
             onLoad({{numBadge}});
+            //If badges are being sent from the backend this function will populate them
             if({{incomingData}} == 1){
                 var existing = {{numCount}};
                 for(i = 1; i <= existing; i++){
@@ -16,12 +17,10 @@
                     $("#long" + i).val(data[i-1].Longitude);
                     $("#lat" + i).val(data[i-1].Latitude);
                     for(var x in desc){
-                        //console.log(x);
                         if(desc[x].LID == data[i-1].LID){
                             $("#description" + i).val(desc[x].Description);
                         }
                     }
-                    //$("#description" + i).val(desc[])
                 }
                 for(i=existing+1; i <= {{numBadge}}; i++){
                     lids[i] = -1;
@@ -33,6 +32,7 @@
             }
         });
         $( document ).ready(function() {
+            //loads the google map when a div is opened
             $('.collapse').on('shown.bs.collapse', function () {
                 myMap(this.id);
             });
@@ -76,6 +76,7 @@
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9s43u7fI0DPFQ07aCYMuHGl47S3_-JtU&callback=myMap"></script>
     <script>
+        //set the image names
         function setNameImg(name, id){
             var fileName = name.substr(name.lastIndexOf("\\")+1, name.length);
             document.getElementById("picname" + id).value = fileName;
@@ -112,8 +113,7 @@
                 }
             });
 
-
-
+            //Makes a post call to the backend to put landmark into the database
             $('.collapse').on('hidden.bs.collapse', function () {
                 var valid = validate(this.id);
 

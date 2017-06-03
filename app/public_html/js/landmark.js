@@ -199,57 +199,56 @@ function placeMarker(map, location, element) {
 }
 
 function upload(cid){
-    $('.collapse').on('click', function(){
-        var valid = validate(this.id);
-        if (valid){
-            $('.collapse').on('hidden.bs.collapse', function () {
-                var id = this.id;
-                var name = $("#name" + this.id).val();
-                var description = $("#description" + this.id).val();
-                var lat = $("#lat" + this.id).val();
-                var long = $("#long" + this.id).val();
-                var file1 = $("#pic" + this.id)[0].files[0];
-                var file2 = $("#logo" + this.id)[0].files[0];
-                var file1name = $("#picname" + this.id).val();
-                var file2name = $("#logoname" + this.id).val();
-                var creator = $("#creator" + id).val();
-                var url = $("#url" + id).val();
-                var cid = cid;
-                var formData = new FormData();
-                formData.append("cid", cid);
-                formData.append("file1", file1, file1name);
-                formData.append("file2", file2, file2name);
-                formData.append("name", name);
-                formData.append("lat", lat);
-                formData.append("long", long);
-                formData.append("description", description);
-                formData.append("creator", creator);
-                formData.append("url", url);
-                if(lids[this.id] != -1){
-                    $.ajax({
-                        url:'/database/landmark/update/' + lids[id],
-                        type:'post',
-                        data:formData,
-                        contentType: false,
-                        processData: false,
-                        success:function(data){
-                        }
-                    });
-                }else{
-                    $.ajax({
-                        url:'/database/landmark',
-                        type:'post',
-                        data:formData,
-                        contentType: false,
-                        processData: false,
-                        success:function(data){
-                            lids[id] = data;
-                        }
-                    });
+$('.collapse').on('hidden.bs.collapse', function () {
+    var valid = validate(this.id);
+    var id = this.id;
+    var name = $("#name" + this.id).val();
+    var description = $("#description" + this.id).val();
+    var lat = $("#lat" + this.id).val();
+    var long = $("#long" + this.id).val();
+    var file1 = $("#pic" + this.id)[0].files[0];
+    var file2 = $("#logo" + this.id)[0].files[0];
+    var file1name = $("#picname" + this.id).val();
+    var file2name = $("#logoname" + this.id).val();
+    var creator = $("#creator" + id).val();
+    var url = $("#url" + id).val();
+    var cid = cid;
+    var formData = new FormData();
+    formData.append("cid", cid);
+    formData.append("file1", file1, file1name);
+    formData.append("file2", file2, file2name);
+    formData.append("name", name);
+    formData.append("lat", lat);
+    formData.append("long", long);
+    formData.append("description", description);
+    formData.append("creator", creator);
+    formData.append("url", url);
+
+    if (valid){
+        if(lids[this.id] != -1){
+            $.ajax({
+                url:'/database/landmark/update/' + lids[id],
+                type:'post',
+                data:formData,
+                contentType: false,
+                processData: false,
+                success:function(data){
+                }
+            });
+        }else{
+            $.ajax({
+                url:'/database/landmark',
+                type:'post',
+                data:formData,
+                contentType: false,
+                processData: false,
+                success:function(data){
+                    lids[id] = data;
                 }
             });
         }
-    });
+    }
+});
 
 }
 

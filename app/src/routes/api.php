@@ -12,22 +12,22 @@
 
         return $connection;
     }
-	
+
 	function badgeUpload($request, $lid) {
 			$files = $request->getUploadedFiles();
 			$cid = (int)$request->getParam('cid');
-			
+
 			if(empty($files['file1'])) {
 				throw new Exception('Expected a newfile');
-			}	
-			
+			}
+
 			if(empty($files['file2'])) {
 				throw new Exception('Expected a second newfile');
 			}
-			
+
 			$newfile1 = $files['file1'];
 			$newfile2 = $files['file2'];
-			
+
 			//File storage updates
 			if($newfile1->getError() === UPLOAD_ERR_OK && $newfile2->getError() === UPLOAD_ERR_OK) {
 				$uploadFileName1 = $newfile1->getClientFilename();
@@ -36,25 +36,25 @@
 				$newfile1->moveTo("../Resources/Images/$cid/$uploadFileName1");
 				$newfile2->moveTo("../Resources/Images/$cid/$uploadFileName2");
 			}
-			
+
 			//Database updates
 			$imageType = substr($uploadFileName1, strpos($uploadFileName1, ".")+1);
 			$conn = connect_db();
 			$stmt = $conn->prepare("INSERT INTO LandmarkImages (FileLocation, ImageType) Values (?, ?)");
 			$stmt->execute([$cid, $uploadFileName1, $imageType]);
-			
+
 			$stmt = $conn->prepare("UPDATE Landmarks SET Badge = ? WHERE LID = ?;");
 			$stmt->execute($uploadFileName2, $lid);
-			
+
 			$output = $conn->query("SELECT MAX(PicID) AS MaxPid FROM LandmarkImages;");
 			while($row = $output->fetch()) {
 				$pid = $row['MaxPid'];
 			}
-			
+
 			$conn = null;
 			return $pid;
 	}
-	
+
 	function superbadgeUpload($request){
         $files = $request->getUploadedFiles();
         $cid = (int)$request->getParam("cid");
@@ -413,20 +413,6 @@
         return $response->withJson($result);
     });
 
-    $app->get('/image/logo/{wid}', function (Request $request, Response $response){
-        //$imgName = (string)$request->getAttribute('imageid');
-        $conn = connect_db();
-        $wid = (int)$request->getAttribute('wid');
-        $stmt = $conn->prepare("SELECT FileLocation FROM CollectionImages INNER JOIN Collections ON Collections.PicID = CollectionImages.PicID WHERE Collections.CID = ?;");
-        $stmt->execute([$wid]);
-        $result = $stmt->fetch();
-        $image = file_get_contents('../Resources/Images/' . $result['FileLocation']);
-        $response->write($image);
-        return $response->withHeader('Content-Type', 'image/png');
-        //echo $image;
-    });
-
-
 	$app->post('/database/collection', function(Request $request){
 		$cid =(int)$request->getParam("cid");
 		$name = $request->getParam("name");
@@ -558,7 +544,7 @@
 
         $stmt = $conn->prepare("INSERT INTO LandmarkDescription (DesID, LID, CID, Description) VALUES (?, ?, ?, ?)");
         $stmt->execute([$desid, $lid, $cid, $description]);
-		
+
 		$pid = (int)badgeUpload($request, $lid);
 		$stmt = $conn->prepare("UPDATE Landmarks SET PicID = ? WHERE LID = ?;");
 		$stmt->execute([$pid, $lid]);

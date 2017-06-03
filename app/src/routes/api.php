@@ -97,11 +97,11 @@
         $conn = null;
     });
 
-    $app->get('/api/collection/{wid}', function (Request $request, Response $response){
+    $app->get('/api/collection/{cid}', function (Request $request, Response $response){
         $conn = connect_db();
-        $wid = (int)$request->getAttribute('wid');
+        $cid = (int)$request->getAttribute('cid');
         $stmt = $conn->prepare("SELECT * FROM Collections WHERE CID = ?;");
-        $stmt->execute([$wid]);
+        $stmt->execute([$cid]);
         $output = $stmt->fetch();
             echo json_encode($output);
         $conn = null;
@@ -156,12 +156,12 @@
         $conn = null;
     });
 
-    $app->get('/api/landmark/all/{wid}', function (Request $request, Response $response){
+    $app->get('/api/landmark/all/{cid}', function (Request $request, Response $response){
         $ara = array();
         $conn = connect_db();
-        $wid = (int)$request->getAttribute('wid');
+        $cid = (int)$request->getAttribute('cid');
         $stmt = $conn->prepare("SELECT * FROM Landmarks LEFT JOIN LandmarkDescription ON LandmarkDescription.DesID = Landmarks.DescID INNER JOIN CollectionLandmarks ON CollectionLandmarks.LandmarkID = Landmarks.LID WHERE CollectionLandmarks.CollectionID = ?;");
-        $stmt->execute([$wid]);
+        $stmt->execute([$cid]);
         while($row = $stmt->fetch()) {
             array_push($ara, $row);
         }
@@ -421,7 +421,6 @@
 		$numberOfLandmarks = (int)$request->getParam("numBadge");
         $isOrdered = (int)$request->getParam("ordered");
         $idToken = $request->getParam("idToken");
-		//$picID = (int)superbadgeUpload($request);
 
         error_log(print_r($idToken, TRUE));
 

@@ -1,7 +1,7 @@
 # MagpieCMS
 Team Members: James Smith, Blake Impecoven, Evan Gordon
 
-Support Members: Etan Turing
+Support Members: Ethan Tuning
 
 Client: Ginelle Hustrulid
 

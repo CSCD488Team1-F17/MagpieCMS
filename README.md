@@ -1,7 +1,7 @@
-# magpie-cms
-Team Members: Nick Duke, Brad Howard, Vlad Sinitsa, Sage Zaugg
+# MagpieCMS
+Team Members: James Smith, Blake Impecoven, Evan Gordon
 
-Support Members: Meg Lybbert, Matt Jett
+Support Members: Etan Turing
 
 Client: Ginelle Hustrulid
 
